@@ -28,7 +28,7 @@ header_nav = [
     { name = "home", url = "/", lang = "en" },
     { name = "主页", url = "/zh", lang = "zh" },
 
-    { name = "archived", url = "posts", lang = "en" },
+    { name = "archived", url = "/posts", lang = "en" },
     { name = "归档", url = "/zh/posts", lang = "zh" },
 
     { name = "tags", url = "/tags", lang = "en" },
@@ -37,7 +37,7 @@ header_nav = [
     { name = "categories", url = "/categories", lang = "en" },
     { name = "分类", url = "/zh/categories", lang = "zh" },
 
-    { name = "friends", url = "friends", lang = "en" },
+    { name = "friends", url = "/friends", lang = "en" },
     { name = "朋友", url = "/zh/friends", lang = "zh" },
 
     { name = "about", url = "/about", lang = "en" },
