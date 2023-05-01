@@ -1,6 +1,7 @@
 # The URL the site will be built for
 base_url = "https://blog.skygard.work"
 title = "iGxnon's blog"
+description = "iGxnon's blog powered by a (nearly) no-CSS, fast, minimalist Zola theme: 'no-style-please'"
 # Language code for this site
 default_language = "en"
 # The theme to use
