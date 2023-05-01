@@ -1,0 +1,77 @@
+# The URL the site will be built for
+base_url = "https://blog.skygard.work"
+title = "iGxnon's blog"
+# Language code for this site
+default_language = "en"
+# The theme to use
+theme = "no-style-please"
+# Whether to automatically compile all Sass files in the sass directory
+compile_sass = false
+# Whether to build a search index to be used later on by a JavaScript library
+build_search_index = true
+taxonomies = [
+    { name = "tags" },
+    { name = "categories" },
+]
+
+[markdown]
+# Whether to do syntax highlighting
+# Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
+highlight_code = true
+render_emoji = true
+
+[extra]
+# Put all your custom variables here
+author = "iGxnon"
+logo = "images/logo.png"
+header_nav = [
+    { name = "home", url = "/", lang = "en" },
+    { name = "主页", url = "/zh", lang = "zh" },
+
+    { name = "archived", url = "posts", lang = "en" },
+    { name = "归档", url = "/zh/posts", lang = "zh" },
+
+    { name = "tags", url = "/tags", lang = "en" },
+    { name = "标签", url = "/zh/tags", lang = "zh" },
+
+    { name = "categories", url = "/categories", lang = "en" },
+    { name = "分类", url = "/zh/categories", lang = "zh" },
+
+    { name = "friends", url = "friends", lang = "en" },
+    { name = "朋友", url = "/zh/friends", lang = "zh" },
+
+    { name = "about", url = "/about", lang = "en" },
+    { name = "关于", url = "/zh/about", lang = "zh" },
+
+    { name = "> 简体中文", url = "/zh", lang = "en" },
+    { name = "> English", url = "/", lang = "zh" },
+]
+footer_nav = [
+    { name = "Github", url = "https://github.com/iGxnon" },
+    { name = "Twitter", url = "https://twitter.com/iGxnon" }
+]
+
+# Whether enable recent posts on first page
+[[extra.recent_posts]]
+lang = "en"
+content_path = "posts/_index.md"
+count = 10
+hint = "...View More"
+url = "posts"
+
+# Whether enable recent posts on first page.
+[[extra.recent_posts]]
+lang = "zh"
+content_path = "posts/_index.zh.md"
+count = 10
+hint = "...查看更多"
+url = "/zh/posts"
+
+[languages.zh]
+title = "iGxnon 的博客"
+build_search_index = true
+generate_feed = true
+taxonomies = [
+    { name = "tags" },
+    { name = "categories" },
+]
