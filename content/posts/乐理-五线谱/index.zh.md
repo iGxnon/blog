@@ -500,11 +500,11 @@ G-B A-F
 
 
 {{ music_abc(abc="
-Q: 3/8=50 'Slowly'
+Q: 3/8=50
 M: 6/8
 L: 1/8
 AAA BBB
-Q: 'Allegro' 1/4=120
+Q: 1/4=120
 M: 4/4
 L: 1/8
 AA BB CC DD
