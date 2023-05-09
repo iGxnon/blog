@@ -6,6 +6,7 @@ title: About
 
 + Username: iGxnon
 + Please call me "Paopao" (Omit the 't' sound when pronouncing 'pop out'.)
++ User of macOS / archlinux + dwm
 + INTJ
 + Broad interests, want to learn everything, ~~but can't learn anything~~.
 + Currently playing the role of the protagonist in the drama 《About Me Being Hit by a Mud Truck in a Magic World and Reincarnated as a Green Goblin Living a Relatively Failed Life in 996》.
