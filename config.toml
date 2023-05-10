@@ -44,8 +44,8 @@ header_nav = [
     { name = "about", url = "/about", lang = "en" },
     { name = "关于", url = "/zh/about", lang = "zh" },
 
-    { name = "> 简体中文", url = "/zh", lang = "en" },
-    { name = "> English", url = "/", lang = "zh" },
+    { name = ">简体中文", url = "/zh", lang = "en" },
+    { name = ">English", url = "/", lang = "zh" },
 ]
 footer_nav = [
     { name = "Github", url = "https://github.com/iGxnon" },
