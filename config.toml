@@ -26,6 +26,8 @@ render_emoji = true
 author = "iGxnon"
 logo = "images/logo.png"
 header_nav = [
+    { name = "RSS", url = "/zh/atom.xml", lang = "zh" },
+
     { name = "home", url = "/", lang = "en" },
     { name = "主页", url = "/zh", lang = "zh" },
 
