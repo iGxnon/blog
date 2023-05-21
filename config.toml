@@ -26,8 +26,6 @@ render_emoji = true
 author = "iGxnon"
 logo = "images/logo.png"
 header_nav = [
-    { name = "RSS", url = "/zh/atom.xml", lang = "zh" },
-
     { name = "home", url = "/", lang = "en" },
     { name = "主页", url = "/zh", lang = "zh" },
 
@@ -50,6 +48,7 @@ header_nav = [
     { name = ">English", url = "/", lang = "zh" },
 ]
 footer_nav = [
+    { name = "RSS", url = "/zh/atom.xml" },
     { name = "Github", url = "https://github.com/iGxnon" },
     { name = "Twitter", url = "https://twitter.com/iGxnon" }
 ]
