@@ -30,4 +30,4 @@ title: 朋友
 
 - stellaris: [https://blog.stellaris.wang/](https://blog.stellaris.wang/)
 
-    Devops in Go💕
+    Devops in Go<span class="emoji">💕</span>

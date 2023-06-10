@@ -35,15 +35,15 @@ taxonomies:
 
 ## 开销
 
-> Softmax 中间输入层到输出层是全连接的，称其为 `全连接层`，说白了就是把输入和输出全用权重 $\mathbf{w}$ 关联起来
->
-> 全连接层的参数开销通常非常大，如果有 $d$ 个输入和 $q$ 个输出，全连接层需要学习的参数有 $d * q$ 个这么多，参数开销记为 $O(dq)$
->
-> 对于不是全连接层，从 $d$ 个输入到 $q$ 个输出可以引入一个超参数 $n$，使得参数开销降低为 $O(\frac{dq}{n})$
+Softmax 中间输入层到输出层是全连接的，称其为 `全连接层`，说白了就是把输入和输出全用权重 $\mathbf{w}$ 关联起来
+
+全连接层的参数开销通常非常大，如果有 $d$ 个输入和 $q$ 个输出，全连接层需要学习的参数有 $d * q$ 个这么多，参数开销记为 $O(dq)$
+
+对于不是全连接层，从 $d$ 个输入到 $q$ 个输出可以引入一个超参数 $n$，使得参数开销降低为 $O(\frac{dq}{n})$
 
 ## logistic 回归
 
-> 可以理解成 Softmax 只有两个输出的特殊情况，这时这两个输出进行分类的话肯定一个是 1 一个是 0，对应逻辑(logistic)输出
+可以理解成 Softmax 只有两个输出的特殊情况，这时这两个输出进行分类的话肯定一个是 1 一个是 0，对应逻辑(logistic)输出
 
 ## Softmax 函数
 
@@ -53,10 +53,9 @@ $$
 \mathbf{\hat{y}} = softmax(\mathbf{o})
 $$
 
-> $\mathbf{o}$ 为输出向量
->
-> 其中 $\hat{y}_i$ 为:
+$\mathbf{o}$ 为输出向量
 
+其中 $\hat{y}_i$ 为:
 $$
 \hat{y}_ {i} = \frac{\exp \left(o_ {i}\right)} {\sum_ {k}^{n} \exp \left(o_ {k}\right)}
 $$
@@ -67,17 +66,17 @@ $$
 
 + softmax 很难将一个分布逼近到一个只有一个元素为 1 的剩余元素全为 0 的向量
 
-> 假设 $\hat{y}_i$ 是需要逼近到 1 的元素
->
-> 有 $\hat{y}_ {i}=\frac{\exp \left(o_ {i}\right)}{\sum_ {k}^{n} \exp \left(o_ {k}\right)}=1$
->
-> $\Leftrightarrow exp(o_i) = \sum_{k}^{n}exp(o_k)$
->
-> $\Leftrightarrow exp(o_1) + exp(o_2) + ... + exp(o_{i-1}) + exp(o_{i+1}) + ... + exp(o_{n})  = 0$
->
-> $exp(x) > 0$ 恒成立，只有当 $o_k$ 是一个绝对值很大的负数时才会逼近 $exp(o_k)$ 0
+    假设 $\hat{y}_i$ 是需要逼近到 1 的元素
 
-> 通常的解决方法是让它逼近一个 [0, 0, 0.9, ....] 类似的向量
+    有 $\hat{y}_ {i}=\frac{\exp \left(o_ {i}\right)}{\sum_ {k}^{n} \exp \left(o_ {k}\right)}=1$
+
+    $\Leftrightarrow exp(o_i) = \sum_{k}^{n}exp(o_k)$
+
+    $\Leftrightarrow exp(o_1) + exp(o_2) + ... + exp(o_{i-1}) + exp(o_{i+1}) + ... + exp(o_{n})  = 0$
+
+    $exp(x) > 0$ 恒成立，只有当 $o_k$ 是一个绝对值很大的负数时才会逼近 $exp(o_k)$ 0
+
+    通常的解决方法是让它逼近一个 [0, 0, 0.9, ....] 类似的向量
 
 + softmax 处理的输入如果很大时，指数函数的暴增性可能会导致数值溢出，则需要将 $o_k - max(\mathbf{o})$ 定义为新的 $\hat{o}_k$
 
@@ -90,13 +89,12 @@ $$
 
 + 信息熵
 
-> 公式
-
+公式
 $$
 H(p) = \sum_{i=1}^{n} p_klog(\frac{1}{p_k}) = -\sum_{i=1}^{n} p_klogp_k
 $$
 
-> 其中 $p_k$ 是真实分布
+其中 $p_k$ 是真实分布
 
 信息熵作用是量化一个随机事件(一个概率分布)的不确定性
 
@@ -114,13 +112,12 @@ $$
 
 + 交叉熵 (cross entropy)
 
-> 公式
-
+公式
 $$
 H(p,q) = \sum_{i = 1}^{n} p_ klog(\frac{1}{q_k}) = -\sum_ {i=1}^{n} p_ klog(q_ k)
 $$
 
-> 其中 $p_k$ 是真实分布，$q_k$ 是预测分布
+其中 $p_k$ 是真实分布，$q_k$ 是预测分布
 
 衡量一个非真实分布的不确定性时，就要引入交叉熵的概念
 
@@ -132,13 +129,12 @@ $$
 
 + 相对熵 (relative entropy) 也叫 KL散度 (Kullback–Leibler divergence)
 
-> 公式
-
+公式
 $$
 KL(p,q) = \sum_{i=1}^{n} p_klog(\frac{1}{q_k})) - \sum_{i=1}^{n} p_klog\frac{1}{p_k}
 $$
 
-> 其实就是交叉熵减去信息熵
+其实就是交叉熵减去信息熵
 
 用来衡量两个分布的接近大小
 
@@ -150,13 +146,12 @@ $$
 
 ### 交叉熵损失函数
 
-> 公式
-
+公式
 $$
 loss(\mathbf{y}, \mathbf{\hat{y}}) =  -\sum_{i=1}^{n} y_ i log(\hat{y}_ i)
 $$
 
-> 其中 $\mathbf{y}$ 是真实分布，$\mathbf{\hat{y}}$ 是预测分布
+其中 $\mathbf{y}$ 是真实分布，$\mathbf{\hat{y}}$ 是预测分布
 
 + 求导
 
@@ -168,12 +163,11 @@ $$
 = \sum_{i=1}^{n}y_ilog\sum_{k=1}^{n}exp(o_k) - \sum_{i=1}^{n}y_io_j
 $$
 
-> 在 softmax 分类问题中，真实分布是除了一个元素为 1(或者近似为1)，剩余全是 0 的向量，而这里的 j 就是 1 所在真实分布向量里的索引位置
->
-> $softmax(\mathbf{o})_j = \hat{y}_j$ = _预测真实值的概率大小_
->
-> 接下来有
+在 softmax 分类问题中，真实分布是除了一个元素为 1(或者近似为1)，剩余全是 0 的向量，而这里的 j 就是 1 所在真实分布向量里的索引位置
 
+$softmax(\mathbf{o})_j = \hat{y}_j$ = _预测真实值的概率大小_
+
+接下来有
 $$
 loss(\mathbf{y}, \mathbf{\hat{y}}) = log\sum_{k=1}^{n}exp(o_k) - o_j
 $$
@@ -184,13 +178,13 @@ $$
 = softmax(\mathbf{o})_j - 1
 $$
 
-> 其中 $y_j$ = 1，表示真实值概率为 1
+其中 $y_j$ = 1，表示真实值概率为 1
 
-> 这个导数就是预测的 $\hat{y}_j$ 和真实的 $y_j$ 的差
+这个导数就是预测的 $\hat{y}_j$ 和真实的 $y_j$ 的差
 
 ## 实现
 
-> 使用 MNIST 数据集
+使用 MNIST 数据集
 
 
 ```python
