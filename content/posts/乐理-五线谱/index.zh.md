@@ -4,6 +4,9 @@ date: 2023-04-28
 description: 以后想当音乐家（
 extra:
   music_abc: true
+taxonomies:
+  categories: ["音乐"]
+  tags: ["五线谱"]
 ---
 
 
