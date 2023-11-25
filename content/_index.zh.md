@@ -1,5 +1,5 @@
 ---
-description: "iGxnon's blog index page, writen in Chinese"
+description: "泡泡的导航页"
 ---
 
 欢迎来到我的博客！

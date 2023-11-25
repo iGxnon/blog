@@ -2,7 +2,7 @@
 title: About
 ---
 
-<img src="/images/logo.png" witdh=128 height=128 style="border-radius: 100%;"/>
+<img src="/images/logo.png" width=128 height=128 style="border-radius: 100%;"/>
 
 Hello, welcome to this page to get to know me!
 

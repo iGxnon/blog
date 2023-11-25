@@ -2,7 +2,7 @@
 title: Friends
 ---
 
-> Radix order
+> Alphabet order
 
 - beforeleave: [http://www.tanicewhite.cn/](http://www.tanicewhite.cn/)
 - coldrain: [https://blog.coldrain.ink/](https://blog.coldrain.ink/)

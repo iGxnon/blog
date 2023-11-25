@@ -1,5 +1,5 @@
 ---
-description: "iGxnon's blog index page, writen in English"
+description: "iGxnon's blog index page"
 ---
 
 Welcome to my blog!
