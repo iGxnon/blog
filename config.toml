@@ -84,3 +84,11 @@ paginator_hint.last = [
     { lang = "zh", hint = "结尾" },
     { lang = "en", hint = "Last" },
 ]
+
+[extra.giscus]
+enable = true
+data_repo = "iGxnon/blog"
+data_repo_id = "R_kgDOJdd9lw"
+data_category = "Announcements"
+data_category_id = "DIC_kwDOJdd9l84CbO42"
+lang_map = [{ lang = "zh", to = "zh-CN" }]
