@@ -10,23 +10,26 @@ title: 关于
 + INTP
 + 音乐🎵 (j-pop, midwest emo) + 编程🦀️ (rust) + 吉他🎸 (原声, 电琴)
 
+
 + Github: [https://github.com/iGxnon](https://github.com/iGxnon)
 + Twitter: [https://twitter.com/iGxnon](https://twitter.com/iGxnon)
 + Email: aWd4bm9uQGdtYWlsLmNvbQ==
 
 > Keep learning...
 
-<!--
+<div id="inside">
+</div>
 
-> 「明明和大家在一起，却好像孤单一人」
->
->
-> 「好想成为人类啊」
->
->
-> 「为了不让自己偏离这世界」 
->
->
-> 里世界入口：https://blog.skygard.work/inside
-
--->
+<script>
+    var inside_gate = `
+<br><br>
+<p>「明明和大家在一起，却好像孤单一人」</p>
+<p>「好想成为人类啊」</p>
+<p>「为了不让自己偏离这世界」</p>
+<p> &nbsp; 里世界入口： <a href="/zh/inside">/zh/inside</a></p>
+<br><br>
+    `;
+    if (Math.random() < 0.01) {
+        document.querySelector("#inside").innerHTML = inside_gate;
+    }
+</script>

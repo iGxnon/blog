@@ -1,7 +1,7 @@
 # The URL the site will be built for
 base_url = "https://blog.skygard.work"
 title = "iGxnon's blog"
-description = "iGxnon's blog powered by a (nearly) no-CSS, fast, minimalist Zola theme: 'no-style-please'"
+description = "iGxnon's blog, writing feelings"
 # Language code for this site
 default_language = "en"
 # The theme to use
@@ -10,10 +10,17 @@ theme = "no-style-please"
 compile_sass = false
 # Whether to build a search index to be used later on by a JavaScript library
 build_search_index = true
-taxonomies = [
-    { name = "tags" },
-    { name = "categories" },
-]
+taxonomies = [{ name = "tags" }, { name = "categories" }]
+# generate_feed = true
+
+
+[languages.zh]
+title = "泡泡的博客"
+description = "泡泡的博客，书写感受"
+build_search_index = true
+generate_feed = true
+taxonomies = [{ name = "tags" }, { name = "categories" }]
+
 
 [markdown]
 # Whether to do syntax highlighting
@@ -21,59 +28,59 @@ taxonomies = [
 highlight_code = true
 render_emoji = true
 
+
 [extra]
 # Put all your custom variables here
 author = "iGxnon"
 logo = "images/logo.png"
 header_nav = [
-    { name = "home", url = "/", lang = "en" },
-    { name = "主页", url = "/zh", lang = "zh" },
+    { lang = "en", name = "home", path = "/" },
+    { lang = "zh", name = "主页", path = "/zh" },
 
-    { name = "archived", url = "/posts", lang = "en" },
-    { name = "归档", url = "/zh/posts", lang = "zh" },
+    { lang = "en", name = "archived", path = "/posts" },
+    { lang = "zh", name = "归档", path = "/zh/posts" },
 
-    { name = "tags", url = "/tags", lang = "en" },
-    { name = "标签", url = "/zh/tags", lang = "zh" },
+    { lang = "en", name = "tags", path = "/tags" },
+    { lang = "zh", name = "标签", path = "/zh/tags" },
 
-    { name = "categories", url = "/categories", lang = "en" },
-    { name = "分类", url = "/zh/categories", lang = "zh" },
+    { lang = "en", name = "categories", path = "/categories" },
+    { lang = "zh", name = "分类", path = "/zh/categories" },
 
-    { name = "friends", url = "/friends", lang = "en" },
-    { name = "朋友", url = "/zh/friends", lang = "zh" },
+    { lang = "en", name = "friends", path = "/friends" },
+    { lang = "zh", name = "朋友", path = "/zh/friends" },
 
-    { name = "about", url = "/about", lang = "en" },
-    { name = "关于", url = "/zh/about", lang = "zh" },
+    { lang = "en", name = "about", path = "/about" },
+    { lang = "zh", name = "关于", path = "/zh/about" },
 
-    { name = ">简体中文", url = "/zh", lang = "en" },
-    { name = ">English", url = "/", lang = "zh" },
+    { lang = "en", name = "> 简体中文", path = "/zh" },
+    { lang = "zh", name = "> English", path = "/" },
 ]
 footer_nav = [
     { name = "RSS", url = "/zh/atom.xml" },
     { name = "Github", url = "https://github.com/iGxnon" },
-    { name = "Twitter", url = "https://twitter.com/iGxnon" }
+    { name = "Twitter", url = "https://twitter.com/iGxnon" },
 ]
-
-# Whether enable recent posts on first page
-[[extra.recent_posts]]
-lang = "en"
-content_path = "posts/_index.md"
-count = 10
-hint = "...View More"
-url = "posts"
-
-# Whether enable recent posts on first page.
-[[extra.recent_posts]]
-lang = "zh"
-content_path = "posts/_index.zh.md"
-count = 10
-hint = "...查看更多"
-url = "/zh/posts"
-
-[languages.zh]
-title = "iGxnon 的博客"
-build_search_index = true
-generate_feed = true
-taxonomies = [
-    { name = "tags" },
-    { name = "categories" },
+recent_pages = [
+    { lang = "en", section = "posts/_index.md", limit = 7 },
+    { lang = "zh", section = "posts/_index.zh.md", limit = 7 },
+]
+taxonomies_map = [
+    { lang = "zh", taxonomy = "tags", name = "标签" },
+    { lang = "zh", taxonomy = "categories", name = "分类" },
+]
+paginator_hint.first = [
+    { lang = "zh", hint = "开头" },
+    { lang = "en", hint = "First" },
+]
+paginator_hint.previous = [
+    { lang = "zh", hint = "前一页" },
+    { lang = "en", hint = "Pervious" },
+]
+paginator_hint.next = [
+    { lang = "zh", hint = "下一页" },
+    { lang = "en", hint = "Next" },
+]
+paginator_hint.last = [
+    { lang = "zh", hint = "结尾" },
+    { lang = "en", hint = "Last" },
 ]
