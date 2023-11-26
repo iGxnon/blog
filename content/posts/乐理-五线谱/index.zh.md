@@ -1,7 +1,7 @@
 ---
 title: 乐理（一）：五线谱
 date: 2023-04-28
-description: 想当音乐家（
+description: "想当音乐家🎹（"
 extra:
   music_abc: true
 taxonomies:
