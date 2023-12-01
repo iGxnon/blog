@@ -36,6 +36,7 @@ logo = "images/logo.png"
 header_nav = [
     { lang = "en", name = "home", path = "/" },
     { lang = "zh", name = "主页", path = "/zh" },
+    { lang = "zh", name = "周报", path = "/zh/weekly" },
 
     { lang = "en", name = "archived", path = "/posts" },
     { lang = "zh", name = "归档", path = "/zh/posts" },
