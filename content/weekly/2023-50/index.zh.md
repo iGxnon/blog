@@ -1,6 +1,8 @@
 ---
 title: 2023-50 周报
 date: 2023-12-26
+extra:
+  image: "/zh/weekly/2023-50/SeishunnanteIranaiwa.jpg"
 ---
 
 ## 上周情况
