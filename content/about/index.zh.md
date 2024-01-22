@@ -9,7 +9,7 @@ title: 关于
 + 目前是一名学生
 + 日常工作设备 macOS / archlinux
 + INTP
-+ 音乐<span class='emoji'>🎵</span> (j-pop, midwest emo) + 编程<span class='emoji'>🦀️</span> (rust) + 吉他<span class='emoji'>🎸</span> (原声, 电琴)
++ 音乐🎵 (j-pop, midwest emo) + 编程🦀️ (rust) + 吉他🎸 (原声, 电琴)
 
 
 + Github: [https://github.com/iGxnon](https://github.com/iGxnon)
