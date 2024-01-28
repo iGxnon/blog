@@ -5,7 +5,7 @@ extra:
   image: "/zh/weekly/2023-50/SeishunnanteIranaiwa.jpg"
 ---
 
-## 上周情况
+## 本周情况
 
 可能是上上周太摆了，这周总体来说比较勤奋
 

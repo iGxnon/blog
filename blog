@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+function gen_weekly() {
+    title=${1-"周报"}
+    lang=${2-"zh"}
+    week=$(date +"%Y-%U")
+    if [ "${lang}" == "en" ]; then
+        file="content/weekly/${week}.md"
+    else
+        file="content/weekly/${week}.${lang}.md"
+    fi
+    if [ -e "${file}" ]; then
+        echo "Weekly report exist, skip"
+        exit 0
+    fi
+    echo "---
+title: ${week} ${title}
+date: $(date +"%Y-%m-%d")
+---" >> $file
+    echo "Weekly report generated in '${file}'"
+}
+
+function main() {
+    cmd=$1
+    shift
+    case $cmd in
+        "gen_weekly" | "gw")
+            gen_weekly $@
+        ;;
+        "view" | "v")
+            zola serve
+        ;;
+        *)
+            echo "Unknown command: $cmd"
+            exit 1
+        ;;
+    esac
+}
+
+if [ $# -eq 0 ]; then
+    echo "No command!"
+    exit 1
+fi
+
+main $@
