@@ -6,13 +6,13 @@ title: 关于
 
 + 网名: iGxnon
 + 请叫我 `泡泡` 就行
-+ 目前是一名学生
-+ 日常工作设备 macOS / archlinux
 + INTP
 + 音乐🎵 (j-pop, midwest emo) + 编程🦀️ (rust) + 吉他🎸 (原声, 电琴)
 
+---
 
 + Github: [https://github.com/iGxnon](https://github.com/iGxnon)
+  + blog source: [https://github.com/iGxnon/blog](https://github.com/iGxnon/blog)
 + Twitter: [https://twitter.com/iGxnon](https://twitter.com/iGxnon)
 + Email: aWd4bm9uQGdtYWlsLmNvbQ==
 
