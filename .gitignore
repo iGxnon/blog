@@ -2,3 +2,5 @@ public
 .DS_Store
 */.DS_Store
 *.lock
+resume/main.typ
+resume/main.pdf
