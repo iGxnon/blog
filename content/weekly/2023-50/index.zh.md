@@ -19,7 +19,7 @@ extra:
   - 感觉又进步了一点点，稳定性比之前好了一些
   - ~~编了~~(抄了)一个谱子
     - [https://tabs.ultimate-guitar.com/tab/5078239](https://tabs.ultimate-guitar.com/tab/5078239)
-    - 不过这个谱子的 solo 对我来说比较难，制音好难
+    - 不过这个谱子的 riff 对我来说比较难，制音好难
 - 买了个机械闹钟
   - 破林檎手机闹钟的总是在不观测时会随机选择响与不响
 

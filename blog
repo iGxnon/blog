@@ -31,7 +31,11 @@ function main() {
             zola serve
         ;;
         *)
-            echo "Unknown command: $cmd"
+            echo "---- Usage ----
+gen_weekly: generate a weekly report
+    alias: gw
+view:       start a http server
+    alias: v"
             exit 1
         ;;
     esac
