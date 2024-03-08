@@ -9,10 +9,10 @@
 using namespace std;
 
 class Solution {
-public:
-
+   public:
     bool isValid(char s) {
-        return (s >= 'A' && s <= 'Z') || (s >= 'a' && s <= 'z') || (s >= '0' && s <= '9');
+        return (s >= 'A' && s <= 'Z') || (s >= 'a' && s <= 'z') ||
+               (s >= '0' && s <= '9');
     }
 
     bool isPalindrome(string s) {
@@ -20,18 +20,18 @@ public:
         int j = s.size() - 1;
         while (i < j) {
             if (!isValid(s[i])) {
-                i ++;
+                i++;
                 continue;
             }
             if (!isValid(s[j])) {
-                j --;
+                j--;
                 continue;
             }
             if (tolower(s[i]) != tolower(s[j])) {
                 return false;
             }
-            i ++;
-            j --;
+            i++;
+            j--;
         }
         return true;
     }

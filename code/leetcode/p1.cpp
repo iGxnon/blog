@@ -10,12 +10,11 @@
 using namespace std;
 
 class Solution {
-public:
-
+   public:
     // O(N^2)
     vector<int> twoSum(vector<int>& nums, int target) {
-        for (int i = 0; i < nums.size(); ++ i) {
-            for (int j = i + 1; j < nums.size(); ++ j) {
+        for (int i = 0; i < nums.size(); ++i) {
+            for (int j = i + 1; j < nums.size(); ++j) {
                 if (nums[i] + nums[j] == target) {
                     return {i, j};
                 }
@@ -28,7 +27,7 @@ public:
     // 有意思的是这个会比下面的 O(N) 在测评机里更快一点
     vector<int> twoSum2(vector<int>& nums, int target) {
         vector<pair<int, int>> nums_pos;
-        for (int i = 0; i < nums.size(); ++ i) {
+        for (int i = 0; i < nums.size(); ++i) {
             nums_pos.push_back(make_pair(nums[i], i));
         }
         sort(nums_pos.begin(), nums_pos.end());
@@ -40,11 +39,11 @@ public:
                 return {nums_pos[i].second, nums_pos[j].second};
             }
             if (sum > target) {
-                j --;
+                j--;
                 continue;
             }
             if (sum < target) {
-                i ++;
+                i++;
                 continue;
             }
         }

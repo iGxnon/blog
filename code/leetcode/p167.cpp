@@ -6,7 +6,7 @@
 using namespace std;
 
 class Solution {
-public:
+   public:
     // 和 p1 类似
     vector<int> twoSum(vector<int>& numbers, int target) {
         int i = 0;
@@ -17,11 +17,11 @@ public:
                 return {i + 1, j + 1};
             }
             if (res < target) {
-                i ++;
+                i++;
                 continue;
             }
             if (res > target) {
-                j --;
+                j--;
                 continue;
             }
         }

@@ -6,12 +6,12 @@
 using namespace std;
 
 class Solution {
-public:
+   public:
     // O(N)
     // 先有股票最低点，然后才有可能有比之前还多的利润
     int maxProfit(vector<int>& prices) {
         int buy = 0, profit = 0;
-        for (int i = 0; i < prices.size(); ++ i) {
+        for (int i = 0; i < prices.size(); ++i) {
             if (prices[i] < prices[buy]) {
                 buy = i;
             }
@@ -22,5 +22,4 @@ public:
         }
         return profit;
     }
-
 };

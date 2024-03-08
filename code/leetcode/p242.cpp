@@ -7,14 +7,14 @@
 using namespace std;
 
 class Solution {
-public:
+   public:
     bool isAnagram(string s, string t) {
         unordered_map<char, int> store;
         for (auto ch : s) {
-            store[ch] ++;
+            store[ch]++;
         }
         for (auto ch : t) {
-            store[ch] --;
+            store[ch]--;
         }
         for (auto ch : store) {
             if (ch.second != 0) {

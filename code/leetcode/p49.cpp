@@ -11,7 +11,7 @@
 using namespace std;
 
 class Solution {
-public:
+   public:
     // O(N*K*logK)
     vector<vector<string>> groupAnagrams(vector<string>& strs) {
         unordered_map<string, vector<string>> str_map;

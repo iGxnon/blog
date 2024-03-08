@@ -7,7 +7,7 @@
 using namespace std;
 
 class Solution {
-public:
+   public:
     // O(N) ？？？？ 为什么
     int characterReplacement(string s, int k) {
         vector<int> arr(26, 0);
@@ -15,7 +15,6 @@ public:
         for (int r = 0; r < s.size(); ++r) {
             arr[s[r] - 'A']++;
             m = max(m, arr[s[r] - 'A']);
-            // 比较抽象，如果滑动窗口大小
             if (r - l + 1 - m > k) {
                 arr[s[l] - 'A']--;
                 l++;
