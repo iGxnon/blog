@@ -36,11 +36,9 @@ function main() {
             zola serve
         ;;
         *)
-            echo "---- Usage ----
-gen_weekly: generate a weekly report
-    alias: gw
-view:       start a http server
-    alias: v"
+            echo "Commands:
+    gen_weekly, gw [title] [lang]  Generate weekly report
+    view, v                        View the blog"
             exit 1
         ;;
     esac
