@@ -3,4 +3,6 @@ public
 */.DS_Store
 *.lock
 resume/main.typ
-resume/main.pdf
+.vscode
+*.pdf
+**/*.pdf
