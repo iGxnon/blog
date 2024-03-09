@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [ -z "$(which zola)" ]; then
+    echo "zola not found, please install it first"
+    exit 1
+fi
+
 function gen_weekly() {
     title=${1-"周报"}
     lang=${2-"zh"}
