@@ -2,7 +2,6 @@
 // https://leetcode.com/problems/trapping-rain-water/description/
 
 #include <algorithm>
-#include <iostream>
 #include <vector>
 
 using namespace std;
@@ -28,7 +27,6 @@ class Solution {
                     if (height[l] > layer && height[r] > layer) {
                         sum++;
                         break;
-                        ;
                     }
                     if (height[l] <= layer) {
                         l--;
@@ -71,6 +69,12 @@ class Solution {
     // AC
     // O(N)
     // 比较抽象，宏观层面理解：想象成一个碗，记录两边最高点，扫描碗里低于最低边的空间即可。
+    //
+    // lmax
+    // |    rmax
+    // | # |
+    // ————
+    // l   r
     int trap3(vector<int>& h) {
         int l = 0, r = h.size() - 1, lmax = -1, rmax = -1, ans = 0;
         while (l < r) {

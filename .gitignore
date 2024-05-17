@@ -6,3 +6,4 @@ resume/main.typ
 .vscode
 *.pdf
 **/*.pdf
+.debug/

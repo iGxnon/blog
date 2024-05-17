@@ -25,6 +25,15 @@ date: $(date +"%Y-%m-%d")
     echo "Weekly report generated in '${file}'"
 }
 
+function code_gdb() {
+    set -eux;
+    path=${1}
+    output="./.debug/a-gdb-${RANDOM}.out"
+    g++ -g $path -o $output
+    gdb $output
+    rm $output
+}
+
 function main() {
     cmd=$1
     shift
@@ -35,18 +44,17 @@ function main() {
         "view" | "v")
             zola serve
         ;;
+        "gdb")
+            code_gdb $@
+        ;;
         *)
             echo "Commands:
     gen_weekly, gw [title] [lang]  Generate weekly report
-    view, v                        View the blog"
+    view, v                        View the blog
+    gdb [path]                     Debug C/C++ source file"
             exit 1
         ;;
     esac
 }
-
-if [ $# -eq 0 ]; then
-    echo "No command!"
-    exit 1
-fi
 
 main $@

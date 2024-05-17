@@ -1,9 +1,7 @@
 // 125. Valid Palindrome
 // https://leetcode.com/problems/valid-palindrome/description/
 
-#include <algorithm>
 #include <cctype>
-#include <iostream>
 #include <string>
 
 using namespace std;
