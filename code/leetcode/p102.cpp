@@ -52,11 +52,10 @@ class Solution {
         if (!root) {
             return ret;
         }
-
         queue<TreeNode *> q;
         q.push(root);
         while (!q.empty()) {
-            int currentLevelSize = q.size();
+            int currentLevelSize = q.size(); // 这里得保存，不然在 for 循环中 q 会持续变大
             ret.push_back(vector<int>());
             for (int i = 1; i <= currentLevelSize; ++i) {
                 auto node = q.front();

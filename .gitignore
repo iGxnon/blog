@@ -7,3 +7,7 @@ resume/main.typ
 *.pdf
 **/*.pdf
 .debug/
+vendor/
+**/vendor/
+venv/
+**/venv/
