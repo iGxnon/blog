@@ -9,7 +9,7 @@
 
 #let cventry(
   tl: lorem(2),
-  tr: "1145/14 - 1919/8/10",
+  tr: "1145/1/4 - 1919/8/10",
   bl: [],
   br: [],
   content
