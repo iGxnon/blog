@@ -34,6 +34,19 @@ function code_gdb() {
     rm $output
 }
 
+function leetcode() {
+    if [ -z "$(which leetui)" ]; then
+        echo "leetui not found, please use <cargo install leetcode-tui-rs> and try it later"
+        exit 1
+    fi
+    path=${1-'./code/leetcode'}
+    if [ ! -d $path ]; then
+        mkdir -p $path
+        sed -i -E "s#solutions_dir = \"(.+)\"#solutions_dir = \"$path\"#" $HOME/.config/leetui/config.toml
+    fi
+    leetui
+}
+
 function main() {
     cmd=$1
     shift
@@ -46,6 +59,9 @@ function main() {
         ;;
         "gdb")
             code_gdb $@
+        ;;
+        "lc")
+            leetcode $@
         ;;
         *)
             echo "Commands:

@@ -55,7 +55,7 @@ class Solution {
         }
         // 反转头节点后的节点
         ListNode *newHead = reverseList3(head->next);
-        // 反转当前头节点
+        // 从最后开始反转，反转当前头节点
         head->next->next = head;
         // 如果这是中间节点，这个栈弹出后，下一个栈会把这个节点的 next 指向下个节点，如果是最后一个，设置为 nullptr
         head->next = nullptr;

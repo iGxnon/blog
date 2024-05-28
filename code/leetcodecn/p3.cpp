@@ -2,8 +2,8 @@
 // https://leetcode.com/problems/longest-substring-without-repeating-characters/description/
 
 #include <algorithm>
-#include <set>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 using namespace std;
@@ -32,7 +32,7 @@ class Solution {
     int lengthOfLongestSubstring2(string s) {
         int m = 0;
         for (int i = 0; i < s.length(); i++) {
-            set<int> dup;
+            unordered_set<int> dup;
             for (int j = i; j < s.length(); j++) {
                 if (dup.count(s[j])) {
                     break;

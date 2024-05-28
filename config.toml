@@ -15,8 +15,8 @@ taxonomies = [{ name = "tags" }, { name = "categories" }]
 
 
 [languages.zh]
-title = "泡泡的博客"
-description = "泡泡的博客，书写感受"
+title = "泡泡的空中花园"
+description = "我所想往的，无非是依靠着我本性而生活"
 build_search_index = false
 generate_feed = true
 taxonomies = [{ name = "tags" }, { name = "categories" }]

@@ -1,6 +1,6 @@
 
 
-#include <set>
+#include <unordered_set>
 
 using namespace std;
 
@@ -14,7 +14,7 @@ class Solution {
    public:
     // 基本方法
     bool hasCycle(ListNode *head) {
-        set<ListNode *> s;
+        unordered_set<ListNode *> s;
         while (head) {
             if (s.count(head)) {
                 return true;
