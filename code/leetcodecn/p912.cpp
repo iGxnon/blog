@@ -24,10 +24,11 @@ class Solution {
         int pivot = nums[l];
         while (l < r) {
             while (l < r && nums[r] >= pivot) r--; // 这里判断 l < r 和 >=
-            nums[l] = nums[r];
+            nums[l] = nums[r]; // 先覆盖 nums[l]，从右边开始找一个小于 pivot 覆盖
             while (l < r && nums[l] <= pivot) l++;
-            nums[r] = nums[l];
+            nums[r] = nums[l]; // 然后覆盖 nums[r]，从左边开始找一个大于 pivot 覆盖
         }
+        // 循环退出前用的 nums[l] 覆盖了 nums[r]，所以这里把 nums[l] 覆盖原来的 pivot
         nums[l] = pivot;
         return l;
     }
