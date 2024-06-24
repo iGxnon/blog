@@ -16,4 +16,4 @@ title: About
 + Twitter: [https://twitter.com/iGxnon](https://twitter.com/iGxnon)
 + Email: aWd4bm9uQGdtYWlsLmNvbQ==
 
-> Keep learning...
+> Don't hesitate.

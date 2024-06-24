@@ -34,27 +34,20 @@ render_emoji = true
 author = "iGxnon"
 logo = "images/logo.png"
 header_nav = [
-    { lang = "en", name = "home", path = "/" },
-    { lang = "zh", name = "主页", path = "/zh" },
+    { lang = "en", name = "about", path = "/about" },
+    { lang = "zh", name = "关于", path = "/zh/about" },
+
     { lang = "zh", name = "周报", path = "/zh/weekly" },
 
     { lang = "en", name = "archived", path = "/posts" },
     { lang = "zh", name = "归档", path = "/zh/posts" },
 
-    { lang = "en", name = "tags", path = "/tags" },
-    { lang = "zh", name = "标签", path = "/zh/tags" },
-
-    { lang = "en", name = "categories", path = "/categories" },
-    { lang = "zh", name = "分类", path = "/zh/categories" },
-
     { lang = "en", name = "friends", path = "/friends" },
     { lang = "zh", name = "朋友", path = "/zh/friends" },
 
-    { lang = "en", name = "about", path = "/about" },
-    { lang = "zh", name = "关于", path = "/zh/about" },
 
-    { lang = "en", name = "> 简体中文", path = "/zh" },
-    { lang = "zh", name = "> English", path = "/" },
+    { lang = "en", name = "*简体中文", path = "/zh" },
+    { lang = "zh", name = "*English", path = "/" },
 ]
 footer_nav = [
     { name = "RSS", url = "/zh/atom.xml" },

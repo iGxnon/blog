@@ -17,7 +17,7 @@ title: 关于
 + Twitter: [https://twitter.com/iGxnon](https://twitter.com/iGxnon)
 + Email: aWd4bm9uQGdtYWlsLmNvbQ==
 
-> Keep learning...
+> 时止则止，时行则行
 
 <div id="inside">
 </div>
