@@ -45,14 +45,10 @@ header_nav = [
     { lang = "en", name = "friends", path = "/friends" },
     { lang = "zh", name = "朋友", path = "/zh/friends" },
 
+    { name = "RSS", url = "/zh/atom.xml" },
 
     { lang = "en", name = "*简体中文", path = "/zh" },
     { lang = "zh", name = "*English", path = "/" },
-]
-footer_nav = [
-    { name = "RSS", url = "/zh/atom.xml" },
-    { name = "Github", url = "https://github.com/iGxnon" },
-    { name = "Twitter", url = "https://twitter.com/iGxnon" },
 ]
 recent_pages = [
     { lang = "en", section = "posts/_index.md", limit = 7 },
