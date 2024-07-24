@@ -4,6 +4,7 @@ date: 2024-07-24
 description: 一个经典的数据结构
 extra:
   add_toc: true
+  katex: true
 taxonomies:
   categories: ["编程"]
   tags: ["LevelDB"]
@@ -15,7 +16,7 @@ taxonomies:
 
 - 层级从低向高编号，从最高层开始迭代
 
-![skip list](600px-Skip_list.svg.png)
+{{ iimg(src="600px-Skip_list.svg.png") }}
 
 1) 插入示例
 
