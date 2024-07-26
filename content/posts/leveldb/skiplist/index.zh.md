@@ -29,7 +29,7 @@ taxonomies:
 
 ![](Skip_list_add_element-en.gif)
 
-### 特征：
+## 特征
 
 - Arena 内存管理
 - 允许多个读和一个写入并发
@@ -41,7 +41,8 @@ Invariants:
 - 分配的 Node 在整个 SkipList 被删之前永远不会被删除
 - Node 中的字段除了 prev/next 指针以外，插入到跳表里之后不会改变
 - 只有 Insert() 会改变跳表，并且原子操作会使用 Release 级别的 Ordering 确保写入会被其他线程观察到
-### 定义
+
+## 定义
 
 1) SkipList 定义：
 
@@ -168,7 +169,8 @@ class SkipList {
     // Intentionally copyable
   };
 ```
-### 实现
+
+## 实现
 
 1) Node 定义
 
@@ -465,7 +467,8 @@ bool SkipList<Key, Comparator>::Contains(const Key& key) const {
   }
 }
 ```
-### 并发测试
+
+## 并发测试
 
 > 这个 skip list 可以让允许多个读和一个写入并发，所以比较好奇它是怎么测试的
 
@@ -497,10 +500,285 @@ bool SkipList<Key, Comparator>::Contains(const Key& key) const {
 // check that it is either expected given the initial snapshot or has
 // been concurrently added since the iterator started.
 
-// 
+// 当测试一个写入和多个读取并发时，先创建一个 iterator，这个 reader 应当看见
+// 创建时所有的节点，并且它可能会看见目前插入的节点和已经插入的节点。
+
+// 操作的数据：
+// We generate multi-part keys:
+//     <key,gen,hash>
+// where:
+//     key is in range [0..K-1]
+//     gen is a generation number for key
+//     hash is hash(key,gen)
+
+// 开始时，read 保存一下当前每个 key 最新的 gen，迭代器执行随机的 Next() 
+// 和 Seek()，同时会有一个 writer 随机选一个 key，并修改它的 gen 和 hash，
+// 迭代器必须保证对于每个 key，它的状态是 initial snapshot 还是 concurrently added.
 ```
 
 2) 测试过程
 
+测试结构：
 ```c++
+typedef uint64_t Key;
+
+class ConcurrentTest {
+ private:
+  // K 一共为 4，每个 key 都有 2^32 个 gen
+  static constexpr uint32_t K = 4;
+
+  // Key 按照 key, gen, hash 顺序排序
+  static uint64_t key(Key key) { return (key >> 40); } // 高3B（0，1，2）作为 key
+  static uint64_t gen(Key key) { return (key >> 8) & 0xffffffffu; }  // 中间4B（3，4，5，6）作为 gen
+  static uint64_t hash(Key key) { return key & 0xff; } // 低1B（7）作为 hash
+  
+  static uint64_t HashNumbers(uint64_t k, uint64_t g) {
+    uint64_t data[2] = {k, g};
+    return Hash(reinterpret_cast<char*>(data), sizeof(data), 0);
+  }
+  
+  static Key MakeKey(uint64_t k, uint64_t g) {
+    static_assert(sizeof(Key) == sizeof(uint64_t), "");
+    assert(k <= K);  // We sometimes pass K to seek to the end of the skiplist
+    assert(g <= 0xffffffffu); // 确保 g 的高四B全是0，这样 g << 8 高3B全是0
+    // 按照上面的格式，拼成 key，高3B为k，中间4B为 g，低1B为hash
+    return ((k << 40) | (g << 8) | (HashNumbers(k, g) & 0xff));
+  }
+  
+  static bool IsValidKey(Key k) {
+    // 看看 Key 中的 hash 是不是匹配根据 k 和 g 计算出来的 hash
+    return hash(k) == (HashNumbers(key(k), gen(k)) & 0xff);
+  }
+  
+  static Key RandomTarget(Random* rnd) {
+    switch (rnd->Next() % 10) {
+      case 0:
+        // Seek to beginning
+        return MakeKey(0, 0);
+      case 1:
+        // Seek to end，最大的 k 为 K - 1，所以 K 开头的没有后继，是最后一个节点
+        return MakeKey(K, 0);
+      default:
+        // Seek to middle
+        return MakeKey(rnd->Next() % K, 0);
+    }
+  }
+  
+  // Per-key generation
+  struct State {
+    std::atomic<int> generation[K];
+    void Set(int k, int v) {
+      // release 写入
+      generation[k].store(v, std::memory_order_release);
+    }
+
+    // acquire 读出
+    int Get(int k) { return generation[k].load(std::memory_order_acquire); }
+  
+    State() {
+      // 所有 k 的 g 初始化为 0
+      for (int k = 0; k < K; k++) {
+        Set(k, 0);
+      }
+    }
+  };
+  
+  // Current state of the test
+  State current_;
+  
+  Arena arena_;
+  
+  // SkipList is not protected by mu_.  We just use a single writer
+  // thread to modify it.
+  // 没有 mutex 保护，因为确保只会有一个 writer
+  SkipList<Key, Comparator> list_;
+  
+ public:
+  ConcurrentTest() : list_(Comparator(), &arena_) {}
+  
+  // REQUIRES: External synchronization
+  // 这个方法本身需要一个锁保护
+  void WriteStep(Random* rnd) {
+    const uint32_t k = rnd->Next() % K; // 随机一个选个 k
+    const intptr_t g = current_.Get(k) + 1; // 取出它的 g，并 +1，这里的 g 总是大于 0
+    const Key key = MakeKey(k, g); // 算出新的 key
+    list_.Insert(key); // 插入进去
+    current_.Set(k, g); // 更新这个 k 的 g
+  }
+  
+  void ReadStep(Random* rnd) {
+    // Remember the initial committed state of the skiplist.
+    // 保存创建迭代器前的状态，这个状态需要在之后依旧有效
+    State initial_state; // 暂且认为是一个 int initial_state[4] 的数组，一共4个key
+    for (int k = 0; k < K; k++) {
+      initial_state.Set(k, current_.Get(k)); // 获取每个 key 最新的 gen
+    }
+  
+    Key pos = RandomTarget(rnd); // 随机跳到一个地方，这个地方可能在 skip list 里找不到
+    SkipList<Key, Comparator>::Iterator iter(&list_);
+    iter.Seek(pos); // iter 的 cursor 目前指向 pos 或者 pos 的直接后继，中间可能有 gap
+    while (true) {
+      Key current;
+      if (!iter.Valid()) {
+        // 如果当前位置没有 key，说明 pos 不存在于 skip list 且没有后继，那么就从 pos 开始到末尾
+        current = MakeKey(K, 0);
+      } else {
+        current = iter.key(); // 取当前位置的 key
+        // 确保当前的 key 是合法的
+        ASSERT_TRUE(IsValidKey(current)) << current;
+      }
+      // current 会一直往前走
+      ASSERT_LE(pos, current) << "should not go backwards";
+
+      // Verify that everything in [pos,current) was not present in
+      // initial_state.
+      // pos 到 current 之间可能有一段距离，且这段距离里的并发插入的 key 在 iter.Seek(pos)
+      // 之前一定不在 skip list 里（Seek 之后可能有 writer 并发执行而存在，但这里只看 initial_state）
+      // 那么我们在 iter.Seek(pos) 之前观察到的 initial_state 里一定没有观察到这段 key 的 gen。
+      // 所以这里检查 initial_state 里的 4 个 key 的 gen 是否总是小于这段 gap 里的可能
+      // 插入的 key 的 gen。
+      while (pos < current) {
+        ASSERT_LT(key(pos), K) << pos;
+  
+        // Note that generation 0 is never inserted, so it is ok if
+        // <*,0,*> is missing.
+        // 由于 gen = 0 不会被插入（current_.Get(k) + 1 总是 > 0），所以不用检查 gen = 0 的 key
+        ASSERT_TRUE((gen(pos) == 0) ||
+                    (gen(pos) > static_cast<Key>(initial_state.Get(key(pos)))))
+            << "key: " << key(pos) << "; gen: " << gen(pos)
+            << "; initgen: " << initial_state.Get(key(pos));
+  
+        // Advance to next key in the valid key space
+        if (key(pos) < key(current)) {
+          // 跳过一整个 key space，去检查 initial_state 里下一个 key
+          pos = MakeKey(key(pos) + 1, 0);
+        } else {
+          // current > pos，所以这里 key(pos) = key(current)，往后移动一个 gen，
+          // 直到遇到 current
+          pos = MakeKey(key(pos), gen(pos) + 1);
+        }
+      }
+      
+      // 直到迭代到末尾
+      if (!iter.Valid()) {
+        break;
+      }
+
+	  // 迭代器往后推进一个随机的距离
+      if (rnd->Next() % 2) {
+        iter.Next();
+        pos = MakeKey(key(pos), gen(pos) + 1); // 最后一个 pos 已经检查过了(current)，跳过
+      } else {
+        Key new_target = RandomTarget(rnd);
+        if (new_target > pos) {
+          pos = new_target;
+          iter.Seek(new_target);
+        }
+      }
+    }
+  }
+};
 ```
+
+测试样例：
+```c++
+// Simple test that does single-threaded testing of the ConcurrentTest
+// scaffolding.
+// 单线程测试（确保原子指令不会重排）
+TEST(SkipTest, ConcurrentWithoutThreads) {
+  ConcurrentTest test;
+  Random rnd(test::RandomSeed());
+  for (int i = 0; i < 10000; i++) {
+    test.ReadStep(&rnd);
+    test.WriteStep(&rnd);
+  }
+}
+
+// 多线程测试
+
+class TestState {
+ public:
+  ConcurrentTest t_;
+  int seed_;
+  std::atomic<bool> quit_flag_;
+
+  // 三个状态，以及同步用途的 Wait 和 Change
+  enum ReaderState { STARTING, RUNNING, DONE };
+  
+  explicit TestState(int s)
+      : seed_(s), quit_flag_(false), state_(STARTING), state_cv_(&mu_) {}
+
+  void Wait(ReaderState s) LOCKS_EXCLUDED(mu_) {
+    mu_.Lock();
+    while (state_ != s) {
+      state_cv_.Wait();
+    }
+    mu_.Unlock();
+  }
+  
+  void Change(ReaderState s) LOCKS_EXCLUDED(mu_) {
+    mu_.Lock();
+    state_ = s;
+    state_cv_.Signal();
+    mu_.Unlock();
+  }
+  
+ private:
+  port::Mutex mu_;
+  ReaderState state_ GUARDED_BY(mu_);
+  port::CondVar state_cv_ GUARDED_BY(mu_);
+};
+
+// 并发读
+static void ConcurrentReader(void* arg) {
+  TestState* state = reinterpret_cast<TestState*>(arg);
+  Random rnd(state->seed_);
+  int64_t reads = 0;
+  state->Change(TestState::RUNNING);
+  while (!state->quit_flag_.load(std::memory_order_acquire)) {
+    state->t_.ReadStep(&rnd);
+    ++reads;
+  }
+  state->Change(TestState::DONE);
+}
+  
+static void RunConcurrent(int run) {
+  // run 就只拿来设置个种子？
+  const int seed = test::RandomSeed() + (run * 100);
+  Random rnd(seed);
+  const int N = 1000;
+  const int kSize = 1000;
+  for (int i = 0; i < N; i++) {
+    // 一次测试一个读和一个写并发
+    if ((i % 100) == 0) {
+      // 进度汇报
+      std::fprintf(stderr, "Run %d of %d\n", i, N);
+    }
+    TestState state(seed + 1);
+    // 只有一个读
+    Env::Default()->Schedule(ConcurrentReader, &state);
+    // 等待这个读 task 被调度
+    state.Wait(TestState::RUNNING);
+    // 只有一个写
+    for (int i = 0; i < kSize; i++) {
+      state.t_.WriteStep(&rnd);
+    }
+    // 写完后退出
+    state.quit_flag_.store(true, std::memory_order_release);
+    // 等待这个读结束
+    state.Wait(TestState::DONE);
+  }
+}
+  
+TEST(SkipTest, Concurrent1) { RunConcurrent(1); }
+TEST(SkipTest, Concurrent2) { RunConcurrent(2); }
+TEST(SkipTest, Concurrent3) { RunConcurrent(3); }
+TEST(SkipTest, Concurrent4) { RunConcurrent(4); }
+TEST(SkipTest, Concurrent5) { RunConcurrent(5); }
+```
+
+## 总结
+
+总的来说，这是一个很不错的实现，简单的同时还具备一些无锁并发的能力。
+
+最后的并发测试部分有一些迷惑，并没有看见多个读和写入并发的测试。
