@@ -172,7 +172,6 @@ char* Arena::AllocateNewBlock(size_t block_bytes) {
   } while (0)
 #endif
 
-
 uint32_t Hash(const char* data, size_t n, uint32_t seed) {
   // Similar to murmur hash
   const uint32_t m = 0xc6a4a793;
@@ -404,12 +403,13 @@ class BloomFilterPolicy : public FilterPolicy {
       // See analysis in [Kirsch,Mitzenmacher 2006].
       // 第一次 Hash，可以很好地混合一个 key 的各个字符，得到一个均匀的结果，但比较慢
       uint32_t h = BloomHash(keys[i]);
-      // ??? 把 hash 值 shift 17 个 bit，double hashing，以后每轮都加上这个 delta 形成新的 hash，一个 key 的 _k 轮，每一轮的距离相等
+      // ??? 把 hash 值 rotate 17 个 bit，double hashing，以后每轮都加上这个 delta 形成新的 hash，一个 key 的 _k 轮，每一轮的距离相等
       const uint32_t delta = (h >> 17) | (h << 15);  // Rotate right 17 bits
       for (size_t j = 0; j < k_; j++) {
         // hash 值表示所在的 bit 位置
         const uint32_t bitpos = h % bits;
         array[bitpos / 8] |= (1 << (bitpos % 8));
+        // 第二次 hash，算个加法，最快的 Hash（确信
         h += delta;
       }
     }
@@ -1012,6 +1012,52 @@ class ShardedLRUCache : public Cache {
   }
 };
 ```
+## Coding
+
+> 定长和变长编码
+
+定长编码很简单，变长编码主要逻辑：
+
+```c++
+const char* GetVarint32PtrFallback(const char* p, const char* limit,
+                                   uint32_t* value);
+inline const char* GetVarint32Ptr(const char* p, const char* limit,
+                                  uint32_t* value) {
+  if (p < limit) {
+    // 虽然是 uint32，只会看一个 byte
+    uint32_t result = *(reinterpret_cast<const uint8_t*>(p));
+    if ((result & 128) == 0) { // 最高位是0说明后面没有变长段了
+      *value = result;
+      return p + 1; // 非空表示正常
+    }
+  }
+  // 不然根据 fallback 实现看变长段能拓展到哪里
+  return GetVarint32PtrFallback(p, limit, value);
+}
+
+// fallback 实现
+const char* GetVarint32PtrFallback(const char* p, const char* limit,
+                                   uint32_t* value) {
+  uint32_t result = 0;
+  // 最多 shift 28/7 = 4 个 bytes，每个 byte 最高位表示是否继续拓展
+  for (uint32_t shift = 0; shift <= 28 && p < limit; shift += 7) {
+    uint32_t byte = *(reinterpret_cast<const uint8_t*>(p));
+    p++;
+    if (byte & 128) {
+      // More bytes are present
+      result |= ((byte & 127) << shift);
+    } else {
+      result |= (byte << shift);
+      *value = result;
+      return reinterpret_cast<const char*>(p);
+    }
+  }
+  return nullptr; // 超过了 shift 限制或者指针超过了 limit，decode 失败
+}
+
+// GetVarint64Ptr 类似，最多 shift 9 个 byte
+```
+
 ## Comparator
 
 > 比较器
@@ -1433,13 +1479,20 @@ struct DoNotDestruct {
 - Env: 默认为当前检测到的运行环境
 - Logger
 - Block Cache
+    - （默认是分片LRU）
 - FilterPolicy: 过滤不存在的 get 减少磁盘读取次数
+    - （默认是布隆过滤器）
 - 数字选项
     - write_buffer_size: memtable 大小？
     - max open files
+      - （默认 1000，linux 默认1024）
     - block size: 未压缩前的块大小，可以动态修改
-    - block restart interval: ?
+      - （顺序读更大的更好）
+      - （随机读更小的更好）
+    - block restart interval:
+      - （见 table format，默认 16）
     - max file size
+      - （看文件系统对目录文件数量的性能测试）
 ## Random
 
 > 简单的随机数生成器，不保证质量

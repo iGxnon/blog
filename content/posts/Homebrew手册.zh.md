@@ -4,8 +4,6 @@ date: 2023-02-08
 extra:
   add_toc: true
 taxonomies:
-  categories:
-    - 笔记
   tags:
     - brew
 ---

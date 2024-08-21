@@ -6,7 +6,6 @@ extra:
   add_toc: true
   katex: true
 taxonomies:
-  categories: [笔记]
   tags: [机器学习, pytorch]
 ---
 

@@ -4,8 +4,6 @@ date: 2022-01-11
 extra:
   add_toc: true
 taxonomies:
-  categories:
-    - 笔记
   tags:
     - kotlin
 ---
