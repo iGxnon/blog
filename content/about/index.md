@@ -45,7 +45,7 @@ The story of this octopus named `Bubbles` continues...
 
 As you can see, this is a minimalist website that may seem a bit rudimentary, but I surprisingly love it. I dislike complex and bloated designs, preferring simple yet efficient interfaces. I believe that the essence of a blog should be its content, without the need for fancy CSS and JS to dress up special effects.
 
-PS: If the color scheme of this site strains your eyes too much (you should take a break!), you can use <a href="/zh/posts/atom.xml" type="application/atom+xml">RSS</a> with a comfortable reader for an enjoyable reading experience (I will strive to produce interesting articles!).
+PS: If the color scheme of this site strains your eyes too much (you should take a break!), you can use <a href="/posts/atom.xml" type="application/atom+xml">RSS</a> with a comfortable reader for an enjoyable reading experience (I will strive to produce interesting articles!).
 
 The theme of this blog originates from [riggraz](https://riggraz.dev/)'s [no style, please! Jekyll theme](https://riggraz.dev/no-style-please/), ported by [atgumx](https://github.com/atgumx/no-style-please) to Zola static page generation system written in Rust. Finally, I made some modifications based on it and released a new theme: [no-style-please](https://github.com/iGxnon/no-style-please), which is deployed on [Cloudflare Pages](https://pages.cloudflare.com/).
 
