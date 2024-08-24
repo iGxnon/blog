@@ -48,10 +48,6 @@ taxonomies:
 
 - 第三方文档很少
   - 这何尝不是一种优点？这就逼着我看官方文档，而不是看互联网那群🐂🐴的C*ND博客杂文
-- 官方文档是英文的
-  - 这是我的问题
-- 编译时间巨长
-  - 大的项目是这样的捏
 - Pypi 上的包不能原生支持 `Mac M1`
   - `docker pull mxnet/python:1.9.1_aarch64_cpu_py3` 可以直接拉取一个使用
   - 可以自己编译，这也是我自从用这破 `M1` 芯片后成功编译的 C/C++ 大型项目了(其他项目用了一堆不支持 m1 的库)
@@ -62,8 +58,6 @@ taxonomies:
 ## 安装
 
 ### 心路历程
-
-> 给我装的杏病都犯了
 
 我有两台设备，一台三年前上新的轻薄本，一台 Mac M1，平时会使用 git 协同编码
 
@@ -115,7 +109,7 @@ https://github.com/apache/incubator-mxnet/issues/20992
 
 ![](https://img.skygard.cn/20220815174550.png)
 
-我就和农村过年看到了年猪一样，直接 pull 下来 run 然后 python 最后 import mxnet，一同操作下来，它行了
+芜湖，直接 pull 下来 run 然后 python 最后 import mxnet，一同操作下来，它行了
 
 然后结合之前在 `Pycharm` 里面发现的 `Docker Interpreter (Docker 解释器)`，最后在 `Pycharm` 里面快乐编程，加上 docker 没有 Rosetta 性能损耗严重，还在一个可以接受的范围内
 

@@ -1,7 +1,7 @@
 ---
-title: LevelDB table format
+title: 《源码解读系列》LevelDB table
 date: 2024-08-01
-description: 工程与理论的碰撞
+description: 磁盘上的数据结构
 extra:
   add_toc: true
 taxonomies:
@@ -226,7 +226,7 @@ static void VersionEditPrinter(uint64_t pos, Slice record, WritableFile* dst) {
   AppendNumberTo(&r, pos);
   r += "; ";
   VersionEdit edit;
-  // 解析 VersionEdit，里面按序存了一些 metadata，没有什么特殊的
+  // 解析 VersionEdit，里面按序存了一些 metadata
   Status s = edit.DecodeFrom(record);
   if (!s.ok()) {
     r += s.ToString();
@@ -1655,7 +1655,7 @@ Iterator* Block::NewIterator(const Comparator* comparator) {
 
 #### TwoLevelIterator
 
-- 两层的 Iterator，一层 index，一个 block，根据 index 动态维护 block iter，避免一次加载过多 block
+- 两层的 Iterator，一层 index，一层 block，根据 index  iter动态更新 block iter
 - 还能不能更高层呢？memtable！
 
 ```c++
@@ -1818,4 +1818,4 @@ void TwoLevelIterator::InitDataBlock() {
 
 可以看出有不少 C++ 工程上的技巧，同时也可以看出 C++ 工程需要构思好对象的所有权管理才不会导致 double free/leak 等问题
 
-具体的代码质量可以看出有在很努力不让它失控了（
+代码质量良好，很少令人迷惑的片段，不过还是可以进一步打磨的，一些方法参数可以变得简单一点

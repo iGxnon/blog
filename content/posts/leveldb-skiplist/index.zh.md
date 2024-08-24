@@ -1,7 +1,7 @@
 ---
-title: LevelDB SkipList
+title: 《源码解读系列》LevelDB skip list
 date: 2024-07-24
-description: 一个经典的数据结构
+description: 经典的数据结构
 extra:
   add_toc: true
   katex: true

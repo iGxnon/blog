@@ -1,7 +1,7 @@
 ---
-title: LevelDB util
+title: 《源码解读系列》LevelDB util
 date: 2024-07-10
-description: util 下有一些独立的工具包，适合刚开始阅读
+description: 常用的工具
 extra:
   add_toc: true
 taxonomies:
