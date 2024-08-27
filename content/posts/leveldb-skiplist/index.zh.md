@@ -7,7 +7,7 @@ extra:
   katex: true
 taxonomies:
   categories: ["编程"]
-  tags: ["LevelDB"]
+  tags: ["LevelDB", "源码解读系列"]
 ---
 
 > 有序数据结构，所有的操作都是 log(N)，有随机过程，易于实现（所以也易于改造成无锁并发，例如：[crossbeam-skiplist](https://github.com/crossbeam-rs/crossbeam/blob/master/crossbeam-skiplist)）

@@ -6,7 +6,7 @@ extra:
   add_toc: true
 taxonomies:
   categories: ["编程"]
-  tags: ["LevelDB"]
+  tags: ["LevelDB", "源码解读系列"]
 ---
 
 
@@ -1559,3 +1559,141 @@ Code:
 - NotSupported
 - InvalidArgument
 - IOError
+
+## Iterator
+
+- LevelDB reader 的主要抽象
+- 双向的
+
+定义
+
+```c++
+class LEVELDB_EXPORT Iterator {
+ public:
+  Iterator();
+
+  Iterator(const Iterator&) = delete;
+  Iterator& operator=(const Iterator&) = delete;
+
+  virtual ~Iterator();
+
+  // An iterator is either positioned at a key/value pair, or
+  // not valid.  This method returns true iff the iterator is valid.
+  virtual bool Valid() const = 0;
+
+  // Position at the first key in the source.  The iterator is Valid()
+  // after this call iff the source is not empty.
+  virtual void SeekToFirst() = 0;
+
+  // Position at the last key in the source.  The iterator is
+  // Valid() after this call iff the source is not empty.
+  virtual void SeekToLast() = 0;
+
+  // Position at the first key in the source that is at or past target.
+  // The iterator is Valid() after this call iff the source contains
+  // an entry that comes at or past target.
+  virtual void Seek(const Slice& target) = 0;
+
+  // Moves to the next entry in the source.  After this call, Valid() is
+  // true iff the iterator was not positioned at the last entry in the source.
+  // REQUIRES: Valid()
+  virtual void Next() = 0;
+
+  // Moves to the previous entry in the source.  After this call, Valid() is
+  // true iff the iterator was not positioned at the first entry in source.
+  // REQUIRES: Valid()
+  virtual void Prev() = 0;
+
+  // Return the key for the current entry.  The underlying storage for
+  // the returned slice is valid only until the next modification of
+  // the iterator.
+  // REQUIRES: Valid()
+  virtual Slice key() const = 0;
+
+  // Return the value for the current entry.  The underlying storage for
+  // the returned slice is valid only until the next modification of
+  // the iterator.
+  // REQUIRES: Valid()
+  virtual Slice value() const = 0;
+
+  // If an error has occurred, return it.  Else return an ok status.
+  virtual Status status() const = 0;
+
+  // Clients are allowed to register function/arg1/arg2 triples that
+  // will be invoked when this iterator is destroyed.
+  //
+  // Note that unlike all of the preceding methods, this method is
+  // not abstract and therefore clients should not override it.
+  // 回收策略
+  using CleanupFunction = void (*)(void* arg1, void* arg2);
+  void RegisterCleanup(CleanupFunction function, void* arg1, void* arg2);
+
+ private:
+  // Cleanup functions are stored in a single-linked list.
+  // The list's head node is inlined in the iterator.
+  struct CleanupNode {
+    // True if the node is not used. Only head nodes might be unused.
+    bool IsEmpty() const { return function == nullptr; }
+    // Invokes the cleanup function.
+    void Run() {
+      assert(function != nullptr);
+      (*function)(arg1, arg2);
+    }
+
+    // The head node is used if the function pointer is not null.
+    CleanupFunction function;
+    void* arg1;
+    void* arg2;
+    CleanupNode* next;
+  };
+  // 以一种链表方式把各种回收策略串起来
+  CleanupNode cleanup_head_;
+};
+
+// Return an empty iterator (yields nothing).
+// 调用 Next/Prev 会 panic
+LEVELDB_EXPORT Iterator* NewEmptyIterator();
+
+// Return an empty iterator with the specified status.
+// 为了保证一些方法的简洁
+LEVELDB_EXPORT Iterator* NewErrorIterator(const Status& status);
+```
+
+实现
+
+```c++
+Iterator::Iterator() {
+  cleanup_head_.function = nullptr;
+  cleanup_head_.next = nullptr;
+}
+
+Iterator::~Iterator() {
+  // 析构时执行回收链
+  if (!cleanup_head_.IsEmpty()) {
+    cleanup_head_.Run();
+    for (CleanupNode* node = cleanup_head_.next; node != nullptr;) {
+      node->Run();
+      CleanupNode* next_node = node->next;
+      delete node;
+      node = next_node;
+    }
+  }
+}
+
+// 注册回收策略，默认的实现，不应该被重写
+void Iterator::RegisterCleanup(CleanupFunction func, void* arg1, void* arg2) {
+  assert(func != nullptr);
+  CleanupNode* node;
+  if (cleanup_head_.IsEmpty()) {
+    node = &cleanup_head_;
+  } else {
+    node = new CleanupNode();
+    node->next = cleanup_head_.next;
+    cleanup_head_.next = node;
+  }
+  node->function = func;
+  node->arg1 = arg1;
+  node->arg2 = arg2;
+}
+```
+
