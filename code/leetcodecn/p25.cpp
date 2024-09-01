@@ -9,32 +9,25 @@ struct ListNode {
 
 class Solution {
    public:
-    // 递归办法，来自题解
     ListNode *reverseKGroup(ListNode *head, int k) {
-        if (!head) return head;
-        ListNode *newHead = head;
-        int i = 1; // 包含这个 head，算上一个
-        while (newHead && newHead->next && i < k) {
-            newHead = newHead->next;
-            i++;
+        if (head == nullptr) return head;
+        int i = k;
+        ListNode *cur = head;
+        while (cur && --i > 0) { // --i，提前一格退出，那么 cur 指向最后一个
+            cur = cur->next;
         }
-        if (i < k) return head; // 如果不足 k 个，则无需反转，返回旧的头
-
-        ListNode *h = head;
+        // no more than k;
+        if (cur == nullptr) return head;
+        ListNode *nextHead = cur->next;
         ListNode *pre = nullptr;
-        ListNode *next = newHead->next;
-        while (h != next) {
-            ListNode *t = h->next;
-            h->next = pre;
-            pre = h;
-            h = t;
+        cur = head;
+        while (cur != nextHead) {
+            ListNode *tmp = cur->next;
+            cur->next = pre;
+            pre = cur;
+            cur = tmp;
         }
-        head->next = reverseKGroup(next, k); // 旧的头的下一个是下个 group 反转后的新的头
-        return newHead;
-    }
-
-    // TODO：自己的写法
-    ListNode *reverseKGroup2(ListNode *head, int k) {
-        return nullptr;
+        head->next = reverseKGroup(nextHead, k);
+        return pre;
     }
 };

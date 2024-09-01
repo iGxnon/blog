@@ -6,19 +6,19 @@ title: About
 
 For a long time I thought a blog represented an individual's token on the Internet. We use the token to label us and surf on the Internet. Many people list their interests, faith and relevant information on the `/about` page to capture people's attention.
 
-But there are some differences here. I don't want to disclose my personal information. I'd like to keep a veil between us. I am merely a token with no time constraints. The words I've written down can't truly convey my inner feelings at the moment.
+But there are some differences here. I don't want to disclose my personal information. I'd like to keep a veil between us. I am merely a token with no time constraints. The words I've written down can't truly convey my innermost feelings at the moment.
 
-In order for you to understand this person, oh no, it might be an octopus in the deep sea! I will convey its meaning to you as a translator of Octopus Language:
+In order for you to understand this person, oh no, it might be an octopus in a deep sea! I will convey its meaning to you as a translator of Octopus Language:
 
-This is an octopus, but its true form is the bubbles spit out by the octopus. Therefore, it often refers to itself as `Bubbles`. If you manage to catch this octopus in real life, you can also call it `Bubbles`(Or a more friendly pronunciation, `Pop out`).
+This is an octopus, but its true form is the bubbles spit out by the octopus. Therefore, it often refers to itself as `Bubbles`. If you manage to catch this octopus in real life, you can also call it `Bubbles`(Or a more friendly pronunciation, `Pop out` without pronouncing `t`).
 
-This octopus has a strange ID: `iGxnon`, which has no pronunciation, and its origin cannot be verified. It is just that the young one needs to give his MC account a name that looks more pleasing than [xddcc](https://www.reddit.com/r/TheDigitalCircus/comments/17v0rdb/what_does_xddcc_mean/).
+This octopus has a strange ID: `iGxnon`, which has no pronunciation, and its origin cannot be verified. It is just that the young one needs to give its MC account a name that looks more pleasing than [xddcc](https://www.reddit.com/r/TheDigitalCircus/comments/17v0rdb/what_does_xddcc_mean/).
 
 This octopus likes to lie on the coral and daydream. Its reactions are always slow, but this is just a disguise to avoid the sight of sharks in the deep sea. In fact, it is very delicate and always worries that the mucus secreted by its tentacles will dirty other fish's skirts. However, some clumsy crabs on the seabed often mistake it for a motionless coral and cannot control their pincers from poking at it, which makes it very distressed. At the same time, it is also afraid of being truly ignored as if it were just another piece of coral.
 
 This octopus often fantasizes about being a highly skilled professional guitarist, just like Squidward in "SpongeBob SquarePants" imagining himself as a musician. While playing, it tends to tangle its tentacles and produce discordant sounds on the guitar. Despite this, it has never given up.
 
-This octopus has been surfing in the digital world since it was young, touching [elephants](https://www.php.net/) on virtual land, tasting [coffee](https://www.java.com/), grabbing [pythons](https://www.python.org/) to scare the [gopher](https://go.dev/) hiding in caves. Now it has forgotten the shape of elephant ears, the taste of coffee, and the hissing sound of pythons, but it can still recall how gopher shiver in fear inside caves. Oh, there is also its new friend [ferris](https://rustacean.net/), a small crab covered in spikes. It records its experiences with these new and old friends in a book called [Github](https://github.com/iGxnon), which was given to it by an [octocat](https://octodex.github.com/). ("Is this an octopus or a cat?")
+This octopus has been surfing in the digital world since it was young, touching [elephants](https://www.php.net/) on virtual land, tasting [coffee](https://www.java.com/), grabbing some [pythons](https://www.python.org/) to scare the [gopher](https://go.dev/) hiding in caves. Now it has forgotten the shape of elephant ears, the taste of coffee, and the hissing sound of pythons, but it can still recall how gopher shiver in fear inside caves. Oh, there is also its new friend [ferris](https://rustacean.net/), a small crab covered in spikes. It records its experiences with these new and old friends in a book called [Github](https://github.com/iGxnon), which was given to it by an [octocat](https://octodex.github.com/). ("Is this an octopus or a cat?")
 
 What? Do you want to know what this octopus looks like? This is its upper body:
 

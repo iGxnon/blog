@@ -18,6 +18,11 @@ taxonomies:
 
 > 用户态内存管理
 
+- Block 大小为 4096B
+- 一次申请大于 1/4 * BlockSize = 1024B 会单独分配一个大小适合的 Block
+- 申请小批量内存可以复用之前的 Block
+- 有内存对齐
+
 头文件
 
 ```c++
@@ -158,9 +163,9 @@ char* Arena::AllocateNewBlock(size_t block_bytes) {
 
 > 快速的 hash
 
-特征：
 - 非加密的
 - 快速
+- 有点像 murmur hash
 
 ```c++
 // The FALLTHROUGH_INTENDED macro can be used to annotate implicit fall-through
@@ -308,6 +313,11 @@ inline int Slice::compare(const Slice& b) const {
 ## Bloom
 
 > 布隆过滤器
+
+- 使用上面的 Hash 作为第一层 Hash
+- 然后根据上面的 Hash 值生成一个 delta，每间隔 delta 放入布隆过滤器中
+  - 也就是说只有一个 Hash 函数
+- 不能删除某个 key，只能重建整个过滤器（Cuckoo Filter：喵喵）
 
 1. filter policy，一个纯抽象类，定义过滤的规则
 
@@ -498,9 +508,12 @@ class SCOPED_LOCKABLE MutexLock {
 
 ## Cache
 
-> Cache.h
+> Cache 统一抽象
 
-对外的 cache api，需要实现是线程安全的
+- 对外的 cache api，需要实现是线程安全的
+- 访问某个 cache entry 需要带个 cache handle，访问完了需要 release 这个 handle
+
+定义
 
 ```c++
 class LEVELDB_EXPORT Cache {
@@ -604,7 +617,10 @@ class LEVELDB_EXPORT Cache {
 
 1. LRUHandle
 
-LRU entry，侵入性数据结构，分配在堆上，**长度不固定（长度不确定的 key 会被贴在最后）**，每个都包含了 prev 和 next 指针用于构建双端链表。此外，还有一个 next_hash 指针，用于构建拉链的 hash 表
+- LRU entry，侵入性数据结构，分配在堆上
+- **长度不固定（长度不确定的 key 会被贴在最后）**
+- 每个都包含了 prev 和 next 指针用于构建双端链表。
+- 还有一个 next_hash 指针，用于构建拉链的 hash 表
 
 ```c++
 // An entry is a variable length heap-allocated structure.  Entries
@@ -632,13 +648,13 @@ struct LRUHandle {
 };
 ```
 
-2. HashTable
+1. HashTable
 
 一个外部提供 hash 的 HashTable（，性能不错
 
 - 具体实现是使用不带加密的 Hash（是否有 hash 碰撞攻击问题？）
 - 拉链法解决冲突
-- 扩容因子是1
+- 扩容因子是1（满了才扩容）
 
 ```c++
 // We provide our own simple hash table since it removes a whole bunch
@@ -946,6 +962,7 @@ void LRUCache::Prune() {
 4. ShardeLRUCache
 
 - 分片的总体，实现了 Cache
+- Cache 的默认实现
 
 ```c++
 static const int kNumShardBits = 4;
@@ -1064,9 +1081,8 @@ const char* GetVarint32PtrFallback(const char* p, const char* limit,
 
 1. 头文件
 
-特征
 - 线程安全的
-- 用于构建 sstable
+- 用于构建 iterator
 
 ```c++
 // A Comparator object provides a total order across slices that are
@@ -1111,7 +1127,9 @@ class LEVELDB_EXPORT Comparator {
 };
 ```
 
-2. BytewiseComparator
+1. BytewiseComparator
+
+- 默认的比较器实现
 
 ```c++
 class BytewiseComparatorImpl : public Comparator {
@@ -1199,10 +1217,12 @@ uint32_t Extend(uint32_t crc, const char* data, size_t n) {
 ```
 
 我看不懂
+
 ## Env
 
-> 把运行所需的环境统一抽象（还包括chrome内核）
-> `helpers/memenv` 里有个内存 env 的实现，用于测试
+> 运行所需的环境统一抽象
+
+- `helpers/memenv` 里有个内存 env 的实现，用于测试
 
 提供文件系统主要抽象
 - FileLock
@@ -1225,7 +1245,7 @@ uint32_t Extend(uint32_t crc, const char* data, size_t n) {
 
 ## Histogram
 
-> 直方图，按 bucket 划分，并打印 bucket 统计结果，用于 benchmark
+> 直方图，用于 benchmark
 
 1. 头文件
 
@@ -1397,6 +1417,7 @@ std::string Histogram::ToString() const {
 > 日志格式化的东西
 
 trivial 没什么好看的
+
 ## NoDestructor
 
 > 阻止析构
@@ -1564,6 +1585,7 @@ Code:
 
 - LevelDB reader 的主要抽象
 - 双向的
+- 带个回收函数的链表，用于 reader 析构时回收掉某些东西
 
 定义
 
