@@ -178,7 +178,7 @@ static void WriteBatchPrinter(uint64_t pos, Slice record, WritableFile* dst) {
     dst->Append(r);
     return;
   }
-  // 把读出来的 record 丢到 WriteBatch，相当于 WriteBatch 直接使用也会构造一个和 record 一样的结构
+  // 把读出来的 record 丢到 WriteBatch，相当于 WriteBatch 的 content 就是落盘时的数据了
   // 然后迭代 WriteBatch，传入一个自定义的 Handle（把迭代的内容写到 dst 里），就可以解析了
   WriteBatch batch;
   // 设置 Writer buffer

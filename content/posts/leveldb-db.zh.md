@@ -24,6 +24,8 @@ namespace config {
 // 最多 7 层，每层 10^L MB，总共 ~10TB
 static const int kNumLevels = 7;
 
+// 下面是 Compaction 相关的配置
+
 // Level-0 compaction is started when we hit this many files.
 static const int kL0_CompactionTrigger = 4;
 
@@ -63,7 +65,7 @@ static const int kReadBytesPeriod = 1048576;
 
 ### InternalFilterPolicy
 
-- 用于把 iternal key 的尾巴去掉再构建 FilterPolicy
+- 用于把 internal key 的尾巴去掉再构建 FilterPolicy
 
 实现
 
@@ -72,7 +74,7 @@ void InternalFilterPolicy::CreateFilter(const Slice* keys, int n,
                                         std::string* dst) const {
   // We rely on the fact that the code in table.cc does not mind us
   // adjusting keys[].
-  // 这里埋下了个坑，会不会有后人踩呢？
+  // 额...，行吧，希望有人不会踩这个坑。
   Slice* mkey = const_cast<Slice*>(keys);
   for (int i = 0; i < n; i++) {
     mkey[i] = ExtractUserKey(keys[i]);
@@ -311,7 +313,7 @@ bool MemTable::Get(const LookupKey& key, std::string* value, Status* s) {
 
 ## DB
 
-- DB 的实现有一把大锁保护着 memtable 等数据结构
+- DB 的实现有一把大锁保护着 memtable 等数据结构，不过锁定的范围不宽，很多耗时操作可以并发的。
 
 ### TableCache
 
@@ -398,7 +400,8 @@ Status TableCache::FindTable(uint64_t file_number, uint64_t file_size,
   EncodeFixed64(buf, file_number);
   Slice key(buf, sizeof(buf)); // cache key 是 file number
   *handle = cache_->Lookup(key);
-  if (*handle == nullptr) {
+
+  if (*handle == nullptr) { // cache miss 了，读取 table
     std::string fname = TableFileName(dbname_, file_number); // <db_name>/<file_number>.ldb
     RandomAccessFile* file = nullptr;
     Table* table = nullptr;
@@ -428,7 +431,7 @@ Status TableCache::FindTable(uint64_t file_number, uint64_t file_size,
   return s;
 }
 
-// 获得一个 Table 的 interator
+// 获得一个 Table 的 iterator
 Iterator* TableCache::NewIterator(const ReadOptions& options,
                                   uint64_t file_number, uint64_t file_size,
                                   Table** tableptr) {
@@ -443,6 +446,7 @@ Iterator* TableCache::NewIterator(const ReadOptions& options,
   }
 
   Table* table = reinterpret_cast<TableAndFile*>(cache_->Value(handle))->table;
+  // 跳到 table 的 NewIterator
   Iterator* result = table->NewIterator(options);
   // iterator 被析构时归还给 cache，不同于某个 table 的 block cache 是可以没有的，table cache 总是有的
   result->RegisterCleanup(&UnrefEntry, cache_, handle);
@@ -476,10 +480,12 @@ void TableCache::Evict(uint64_t file_number) {
 }
 ```
 
-### Read
+### Reader
 
-- 查询过程：`memtable -> memtable on compaction -> sstable`
-- 查询时可能会触发 compaction（读放大）
+#### Get
+
+- 查询过程：`memtable -> immutable memtable -> sstable`
+- 查询时可能会触发 compaction
 
 ```c++
 Status DBImpl::Get(const ReadOptions& options, const Slice& key,
@@ -488,15 +494,17 @@ Status DBImpl::Get(const ReadOptions& options, const Slice& key,
   MutexLock l(&mutex_);
   SequenceNumber snapshot;
   if (options.snapshot != nullptr) {
+    // 如果当前是快照读的话，按用户要的 seq_num 去读
     snapshot =
         static_cast<const SnapshotImpl*>(options.snapshot)->sequence_number();
   } else {
+    // 不然按最新的读
     snapshot = versions_->LastSequence();
   }
 
   MemTable* mem = mem_;
   MemTable* imm = imm_; // 也会查正在 compaction 的 memtable
-  Version* current = versions_->current(); // 从 sstable 里查
+  Version* current = versions_->current(); // 最后从 sstable 里查
   mem->Ref();
   if (imm != nullptr) imm->Ref();
   current->Ref();
@@ -510,8 +518,6 @@ Status DBImpl::Get(const ReadOptions& options, const Slice& key,
     mutex_.Unlock();
     // First look in the memtable, then in the immutable memtable (if any).
     LookupKey lkey(key, snapshot);
-    // 查询过程：
-    // memtable -> memtable on compaction -> sstable
     if (mem->Get(lkey, value, &s)) {
       // Done
     } else if (imm != nullptr && imm->Get(lkey, value, &s)) {
@@ -524,6 +530,7 @@ Status DBImpl::Get(const ReadOptions& options, const Slice& key,
   }
 
   if (have_stat_update && current->UpdateStats(stats)) {
+    // 可能得进行一次压缩
     MaybeScheduleCompaction();
   }
   mem->Unref();
@@ -533,11 +540,20 @@ Status DBImpl::Get(const ReadOptions& options, const Slice& key,
 }
 ```
 
-NewIterator 就不看了，大致上也是这么个流程，操作比较繁琐
+### Writer
 
-### Write
+#### WriteBatch
 
-- 有序批量写入
+- 内存中的和落盘时的数据完全一样
+- 结构：`<seq_num><count>(<type><key>[<value>])*`
+  - 前 8B `seq_num`，4B `count`，后面是 kv 记录或删除记录
+
+实现就不看了，知道结构就简单了
+
+#### Write
+
+- 排队逐个批量写入
+- 可能会把多个 batch 合并起来一起写
 
 ```c++
 Status DBImpl::Write(const WriteOptions& options, WriteBatch* updates) {
@@ -556,11 +572,12 @@ Status DBImpl::Write(const WriteOptions& options, WriteBatch* updates) {
   }
 
   // May temporarily unlock and wait.
+  // 这里可能会等一会，如果 level0 的数据太多了的话
   Status status = MakeRoomForWrite(updates == nullptr);
   uint64_t last_sequence = versions_->LastSequence();
   Writer* last_writer = &w;
   if (status.ok() && updates != nullptr) {  // nullptr batch is for compactions
-    WriteBatch* write_batch = BuildBatchGroup(&last_writer);
+    WriteBatch* write_batch = BuildBatchGroup(&last_writer); // 构建一个 WriteBatch 开始写入了，可能会合并多个 batch
     WriteBatchInternal::SetSequence(write_batch, last_sequence + 1); // 递增的 sequence
     last_sequence += WriteBatchInternal::Count(write_batch);
 
@@ -572,7 +589,7 @@ Status DBImpl::Write(const WriteOptions& options, WriteBatch* updates) {
       mutex_.Unlock(); // 暂时把锁放掉，开始做文件IO了，但这里其实还是只有一个 writer 会进来，前面对所有的 writer 排队了
       status = log_->AddRecord(WriteBatchInternal::Contents(write_batch)); // WAL
       bool sync_error = false;
-      if (status.ok() && options.sync) {
+      if (status.ok() && options.sync) { // 如果开了 sync 的话
         status = logfile_->Sync(); // fsync 确保刷盘
         if (!status.ok()) {
           sync_error = true;
@@ -590,7 +607,7 @@ Status DBImpl::Write(const WriteOptions& options, WriteBatch* updates) {
         RecordBackgroundError(status);
       }
     }
-    if (write_batch == tmp_batch_) tmp_batch_->Clear();
+    if (write_batch == tmp_batch_) tmp_batch_->Clear(); // 如果攒了 batch 的话把攒的 batch 清理掉
 	
     // 更新 last_seq
     versions_->SetLastSequence(last_sequence);
@@ -615,6 +632,71 @@ Status DBImpl::Write(const WriteOptions& options, WriteBatch* updates) {
   }
 
   return status;
+}
+```
+
+#### BuildBatchGroup
+
+- 攒一攒 batch
+  - `non-sync` 的 batch 不会和 `sync` 的合并，`non-sync` 的跑得快
+
+实现
+
+```c++
+
+// REQUIRES: Writer list must be non-empty
+// REQUIRES: First writer must have a non-null batch
+WriteBatch* DBImpl::BuildBatchGroup(Writer** last_writer) {
+  mutex_.AssertHeld();
+  assert(!writers_.empty());
+  Writer* first = writers_.front();
+  WriteBatch* result = first->batch;
+  assert(result != nullptr);
+
+  size_t size = WriteBatchInternal::ByteSize(first->batch);
+
+  // Allow the group to grow up to a maximum size, but if the
+  // original write is small, limit the growth so we do not slow
+  // down the small write too much.
+  // 最大一次攒 1MB
+  size_t max_size = 1 << 20;
+  // 如果太小了就稍微少点，不让小批量的会被延迟
+  if (size <= (128 << 10)) {
+    max_size = size + (128 << 10);
+  }
+
+  *last_writer = first;
+  std::deque<Writer*>::iterator iter = writers_.begin();
+  ++iter;  // Advance past "first"
+  for (; iter != writers_.end(); ++iter) {
+    Writer* w = *iter;
+    if (w->sync && !first->sync) { // non-sync + sync 是不允许的，先把 non-sync 跑得快的弄完，再写 sync 的
+      // Do not include a sync write into a batch handled by a non-sync write.
+      break;
+    }
+
+    if (w->batch != nullptr) {
+      size += WriteBatchInternal::ByteSize(w->batch);
+      if (size > max_size) {
+        // Do not make batch too big
+        // 不能再贪了
+        break;
+      }
+
+      // Append to *result
+      if (result == first->batch) {
+        // Switch to temporary batch instead of disturbing caller's batch
+        // 能不能不要这样写代码了！全局变量想开就开是吧
+        result = tmp_batch_;
+        assert(WriteBatchInternal::Count(result) == 0);
+        WriteBatchInternal::Append(result, first->batch);
+      }
+      // 贴到 tmp_batch_ 后面去
+      WriteBatchInternal::Append(result, w->batch);
+    }
+    *last_writer = w;
+  }
+  return result;
 }
 ```
 
@@ -676,264 +758,7 @@ Status DBImpl::Write(const WriteOptions& options, WriteBatch* updates) {
 - 压缩过程会记录每一层压缩到的地方，下一次从这个地方后面开始压缩
 - 如果到末尾了则会返回到开头继续
 
-注：Compaction 的实现相当之复杂（个人觉得没有仔细研究的必要），我只确定了某些关键流程，并没有全局分析
-
-core compaction:
-
-```c++
-Status DBImpl::DoCompactionWork(CompactionState* compact) {
-  const uint64_t start_micros = env_->NowMicros();
-  int64_t imm_micros = 0;  // Micros spent doing imm_ compactions
-
-  Log(options_.info_log, "Compacting %d@%d + %d@%d files",
-      compact->compaction->num_input_files(0), compact->compaction->level(),
-      compact->compaction->num_input_files(1),
-      compact->compaction->level() + 1);
-
-  assert(versions_->NumLevelFiles(compact->compaction->level()) > 0);
-  assert(compact->builder == nullptr);
-  assert(compact->outfile == nullptr);
-  if (snapshots_.empty()) {
-    compact->smallest_snapshot = versions_->LastSequence();
-  } else {
-    compact->smallest_snapshot = snapshots_.oldest()->sequence_number();
-  }
-
-  // 从 compaction pick 到的所有 table 那里构建一个 merged iterator
-  Iterator* input = versions_->MakeInputIterator(compact->compaction);
-
-  // Release mutex while we're actually doing the compaction work
-  // compaction 之前先解锁
-  mutex_.Unlock();
-
-  input->SeekToFirst();
-  Status status;
-  ParsedInternalKey ikey;
-  std::string current_user_key;
-  bool has_current_user_key = false;
-  SequenceNumber last_sequence_for_key = kMaxSequenceNumber;
-  // 开始遍历这个 merged iterator
-  while (input->Valid() && !shutting_down_.load(std::memory_order_acquire)) {
-    // Prioritize immutable compaction work
-    if (has_imm_.load(std::memory_order_relaxed)) {
-      const uint64_t imm_start = env_->NowMicros();
-      mutex_.Lock();
-      if (imm_ != nullptr) {
-        CompactMemTable();
-        // Wake up MakeRoomForWrite() if necessary.
-        background_work_finished_signal_.SignalAll();
-      }
-      mutex_.Unlock();
-      imm_micros += (env_->NowMicros() - imm_start);
-    }
-
-    // 检查是否需要停止
-    Slice key = input->key();
-    if (compact->compaction->ShouldStopBefore(key) &&
-        compact->builder != nullptr) {
-      status = FinishCompactionOutputFile(compact, input);
-      if (!status.ok()) {
-        break;
-      }
-    }
-
-    // Handle key/value, add to state, etc.
-    // 控制是否丢弃这个 kv，例如 DeletionType 的记录就可以丢弃
-    bool drop = false;
-    if (!ParseInternalKey(key, &ikey)) {
-      // Do not hide error keys
-      current_user_key.clear();
-      has_current_user_key = false;
-      last_sequence_for_key = kMaxSequenceNumber;
-    } else {
-      if (!has_current_user_key ||
-          user_comparator()->Compare(ikey.user_key, Slice(current_user_key)) !=
-              0) {
-        // First occurrence of this user key
-        current_user_key.assign(ikey.user_key.data(), ikey.user_key.size());
-        has_current_user_key = true;
-        last_sequence_for_key = kMaxSequenceNumber;
-      }
-
-      if (last_sequence_for_key <= compact->smallest_snapshot) {
-        // Hidden by an newer entry for same user key
-        drop = true;  // (A)
-      } else if (ikey.type == kTypeDeletion &&
-                 ikey.sequence <= compact->smallest_snapshot &&
-                 compact->compaction->IsBaseLevelForKey(ikey.user_key)) {
-        // For this user key:
-        // (1) there is no data in higher levels
-        // (2) data in lower levels will have larger sequence numbers
-        // (3) data in layers that are being compacted here and have
-        //     smaller sequence numbers will be dropped in the next
-        //     few iterations of this loop (by rule (A) above).
-        // Therefore this deletion marker is obsolete and can be dropped.
-        drop = true;
-      }
-
-      last_sequence_for_key = ikey.sequence;
-    }
-#if 0
-    Log(options_.info_log,
-        "  Compact: %s, seq %d, type: %d %d, drop: %d, is_base: %d, "
-        "%d smallest_snapshot: %d",
-        ikey.user_key.ToString().c_str(),
-        (int)ikey.sequence, ikey.type, kTypeValue, drop,
-        compact->compaction->IsBaseLevelForKey(ikey.user_key),
-        (int)last_sequence_for_key, (int)compact->smallest_snapshot);
-#endif
-	
-    // 如果这个 kv 是需要保留的
-    if (!drop) {
-      // Open output file if necessary
-      if (compact->builder == nullptr) {
-        // 新建一个 sstable
-        status = OpenCompactionOutputFile(compact);
-        if (!status.ok()) {
-          break;
-        }
-      }
-      if (compact->builder->NumEntries() == 0) {
-        compact->current_output()->smallest.DecodeFrom(key);
-      }
-      compact->current_output()->largest.DecodeFrom(key);
-      // 在这里把这个 kv 放进去
-      compact->builder->Add(key, input->value());
-
-      // Close output file if it is big enough
-      // 这可能会导致重新新建一个 sstable
-      if (compact->builder->FileSize() >=
-          compact->compaction->MaxOutputFileSize()) {
-        status = FinishCompactionOutputFile(compact, input);
-        if (!status.ok()) {
-          break;
-        }
-      }
-    }
-    
-    // 来看 merged iterator 的下一个 kv
-    input->Next();
-  }
-    
-  // 压缩完毕，进行记录压缩的时间和清理旧的 table
- 
-  if (status.ok() && shutting_down_.load(std::memory_order_acquire)) {
-    status = Status::IOError("Deleting DB during compaction");
-  }
-  if (status.ok() && compact->builder != nullptr) {
-    status = FinishCompactionOutputFile(compact, input);
-  }
-  if (status.ok()) {
-    status = input->status();
-  }
-  delete input;
-  input = nullptr;
-
-  CompactionStats stats;
-  stats.micros = env_->NowMicros() - start_micros - imm_micros;
-  for (int which = 0; which < 2; which++) {
-    for (int i = 0; i < compact->compaction->num_input_files(which); i++) {
-      stats.bytes_read += compact->compaction->input(which, i)->file_size;
-    }
-  }
-  for (size_t i = 0; i < compact->outputs.size(); i++) {
-    stats.bytes_written += compact->outputs[i].file_size;
-  }
-
-  mutex_.Lock();
-  stats_[compact->compaction->level() + 1].Add(stats);
-
-  if (status.ok()) {
-    status = InstallCompactionResults(compact);
-  }
-  if (!status.ok()) {
-    RecordBackgroundError(status);
-  }
-  VersionSet::LevelSummaryStorage tmp;
-  Log(options_.info_log, "compacted to: %s", versions_->LevelSummary(&tmp));
-  return status;
-}
-```
-
-memtable compaction:
-
-```c++
-void DBImpl::CompactMemTable() {
-  mutex_.AssertHeld();
-  assert(imm_ != nullptr);
-
-  // Save the contents of the memtable as a new Table
-  VersionEdit edit;
-  Version* base = versions_->current();
-  base->Ref();
-  // 把 memtable 压缩进 Level0 sstable
-  Status s = WriteLevel0Table(imm_, &edit, base);
-  base->Unref();
-
-  if (s.ok() && shutting_down_.load(std::memory_order_acquire)) {
-    s = Status::IOError("Deleting DB during memtable compaction");
-  }
-
-  // Replace immutable memtable with the generated Table
-  if (s.ok()) {
-    edit.SetPrevLogNumber(0);
-    edit.SetLogNumber(logfile_number_);  // Earlier logs no longer needed
-    s = versions_->LogAndApply(&edit, &mutex_);
-  }
-
-  if (s.ok()) {
-    // Commit to the new state
-    imm_->Unref();
-    imm_ = nullptr;
-    has_imm_.store(false, std::memory_order_release);
-    RemoveObsoleteFiles();
-  } else {
-    RecordBackgroundError(s);
-  }
-}
-```
-
-Input Iterator 构造过程
-
-```c++
-Iterator* VersionSet::MakeInputIterator(Compaction* c) {
-  ReadOptions options;
-  options.verify_checksums = options_->paranoid_checks;
-  options.fill_cache = false;
-
-  // Level-0 files have to be merged together.  For other levels,
-  // we will make a concatenating iterator per level.
-  // TODO(opt): use concatenating iterator for level-0 if there is no overlap
-  // Level 0 的特殊处理，因为 Level 0 的文件之间可能会有重叠，所以需要合并，再加上下面一层
-  // 对于 Level L(L>1)，只需要这一个文件和下面一层，总共两个 Iterator
-  const int space = (c->level() == 0 ? c->inputs_[0].size() + 1 : 2);
-  Iterator** list = new Iterator*[space];
-  int num = 0;
-  for (int which = 0; which < 2; which++) {
-    if (!c->inputs_[which].empty()) {
-      if (c->level() + which == 0) {
-        // 合并 L0 全部的文件
-        const std::vector<FileMetaData*>& files = c->inputs_[which];
-        for (size_t i = 0; i < files.size(); i++) {
-          list[num++] = table_cache_->NewIterator(options, files[i]->number,
-                                                  files[i]->file_size);
-        }
-      } else {
-        // Create concatenating iterator for the files from this level
-        // Level L or Level L+1 的 iterator，Level L+1 层的 LevelFileNumIterator 可能会遍历多个 file 去搜寻重叠的 key
-        list[num++] = NewTwoLevelIterator(
-            new Version::LevelFileNumIterator(icmp_, &c->inputs_[which]),
-            &GetFileIterator, table_cache_, options);
-      }
-    }
-  }
-  assert(num <= space);
-  // 再把所有的 iterator 合并起来，作为一个新的 iterator，遍历这个 iterator 就可以得到一串连续且被压缩的 kv 了
-  Iterator* result = NewMergingIterator(&icmp_, list, num);
-  delete[] list;
-  return result;
-}
-```
+注：Compaction 的实现比较复杂，限于篇幅会放到后续文章中分析
 
 ### Snapshot
 
@@ -956,7 +781,4 @@ class LEVELDB_EXPORT Snapshot {
 
 ## Conclusion
 
-DB 的主体实现大多是一些组合和并发控制，也是最多最复杂的部分
-
-源码确实不是很干净，有一些 dirty work，比较混乱
-
+DB 的主体实现大多是一些组合和并发控制，也是最多最复杂的部分，这里仅列举了构成 DB 的关键组件与操作。

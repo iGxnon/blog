@@ -1,1 +1,1 @@
-Website: https://bts.wh.edu.pl
+https://ctftime.org/event/2289
