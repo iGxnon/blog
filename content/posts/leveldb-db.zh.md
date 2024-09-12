@@ -513,7 +513,7 @@ Status DBImpl::Get(const ReadOptions& options, const Slice& key,
   Version::GetStats stats;
 
   // Unlock while reading from files and memtables
-  // 读 memtable 时解锁，leveldb skiplist 可以支持多个写入和一个读取并发
+  // 读 memtable 时解锁，leveldb skiplist 可以支持多个读取和一个写入并发
   {
     mutex_.Unlock();
     // First look in the memtable, then in the immutable memtable (if any).
