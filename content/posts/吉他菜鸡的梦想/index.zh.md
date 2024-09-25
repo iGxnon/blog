@@ -33,7 +33,7 @@ const ap1 = new APlayer({
         name: '安和桥间奏',
         artist: '泡泡',
         url: 'anheqiao.mp3',
-        cover: 'https://image-1259160349.cos.ap-chengdu.myqcloud.com/img/anheqiao.jpeg'
+        cover: 'anheqiao.jpeg'
     }]
 });
 </script>
@@ -58,7 +58,7 @@ const ap2 = new APlayer({
         name: 'Always with me 片段',
         artist: '泡泡',
         url: 'always_with_me_snapshot.mp3',
-        cover: 'https://image-1259160349.cos.ap-chengdu.myqcloud.com/img/alwayswithme.jpeg'
+        cover: 'alwayswithme.jpeg'
     }]
 });
 </script>

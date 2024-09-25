@@ -19,7 +19,7 @@ taxonomies:
 
 2. 分组：C1, C2, C3, C4, ...
 
-![](https://img.skygard.cn/capture-2023-04-25-11-33-01.jpg)
+![](1.jpg)
 
 其中 C4 称其为 `中央C`
 

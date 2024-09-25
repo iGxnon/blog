@@ -4,9 +4,9 @@ title: About
 
 ## About me
 
-For a long time I thought a blog represented an individual's token on the Internet. We use the token to label us and surf on the Internet. Many people list their interests, faith and relevant information on the `/about` page to capture people's attention.
+For a long time I thought a blog represented an individual's "token" on the Internet. We use the token to label us and surf on the Internet. Many people list their interests, faith and relevant information on the `/about` page to capture people's attention.
 
-But there are some differences here. I don't want to disclose my personal information. I'd like to keep a veil between us. I am merely a token with no time constraints. The words I've written down can't truly convey my innermost feelings at the moment.
+But there are some differences here. I don't want to disclose my personal information.
 
 In order for you to understand this person, oh no, it might be an octopus in a deep sea! I will convey its meaning to you as a translator of Octopus Language:
 
