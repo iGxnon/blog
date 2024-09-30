@@ -23,6 +23,7 @@ taxonomies:
 $$
 P(AB) = P(A)P(B|A) = P(B)P(A|B)
 $$
+
 $$
 P(A + B) = P(A) + P(B) - P(AB)
 $$
@@ -108,7 +109,7 @@ $$
 
 我们用 $(A|B) > (C|B)$ 来表示在相同的背景 B 下，A 的合情性比 C 大
 
-对于一个给定的命题集合，我们可能会找到一些不依赖任何剩余命题的命题，为其找一个为真的前提会变得无意义。屋顶会不会漏水和南极有多少企鹅没有关系，但确定下南极有多少只企鹅后再去看屋顶会不会漏水也无伤大雅，这并不会把我们的理论一拳打碎
+对于一个给定的命题集合，我们可能会找到一些不依赖任何剩余命题的命题，为其找一个为真的前提会变得无意义。屋顶会不会漏水和南极有多少企鹅没有关系，但确定下南极有多少只企鹅后再去看屋顶，它也不会突然不漏水了，这并不会把我们的理论一拳打碎
 
 作为前提，我们要求它们得是相容的，即要求不会出现互斥的 C，D，在此基础上研究 $A|CD$ 会变得毫无意义：一个假命题可以蕴含所有命题
 
@@ -117,7 +118,7 @@ $$
 
 我们需要找到一个函数，可以帮助我们计算 $(AB|C)$ 的合情性
 
-规则 (IIIb) 告诉我们，这个函数的参数不应该和除开 $A, B, C$ 以外的命题的合情性相关，同时也不能漏掉 $A, B, C$ 任何一个，事实上，这也是符合 (II) 的
+规则 (IIIb) 告诉我们，这个函数的参数不应该和除开 $A, B, C$ 以外的命题的合情性相关，同时也不能漏掉 $A, B, C$ 任何一个
 
 那么在有限的排列组合下：
 
@@ -372,7 +373,7 @@ $$
 
 当 $r = 1$ 时，我们就得到了一个满足性质的非平凡解：
 
-$
+$$
 w[F(x, y)] = w(x)w(y)
 $$
 
@@ -587,7 +588,7 @@ $$
 其中斜率
 
 $$
-b = \alpha^{-1}log[\frac{x}{S(x)}]
+b = \alpha^{-1}log[\frac{x}{S(x)}] > 0
 $$
 
 代入 $\alpha(x)$ 的定义，最后可以推出
@@ -671,7 +672,7 @@ $$
 \lbrace AND, OR, NOT \rbrace
 $$
 
-它构成了一个 **完备集合**
+它构成了一个**完备集合**
 
 不过其实还是可以进一步缩减的，其中 $A + B = \overline{\bar{A}\bar{B}}$
 
@@ -697,7 +698,7 @@ $$
 = p(A|C) + p(B|C) - p(AB|C)
 $$
 
-这就是广义加法规则
+这就是**广义加法规则**
 
 $$
 p(A + B|C) = p(A|C) + p(B|C) - p(AB|C)
@@ -810,6 +811,6 @@ $$
 
 ## 总结
 
-为了分析概率论的基础，我们抛弃了[常识](#chou-si-bo-chong)，定义了[本源](#hui-gui-ben-yuan)，又在推导中重建了我们抛弃的常识，如此下来，我们定会更深刻地认识过去的常识
+为了找到概率论的基础，我们抛弃了[常识](#chou-si-bo-chong)，定义了[本源](#hui-gui-ben-yuan)，又在推导中重建了我们抛弃的常识，如此下来，我们定会更深刻地认识过去的常识
 
-文章里并没有提出新的理论，几乎所有内容来自于 [Probability Theory: The Logic of Science](http://www.cambridge.org/gb/academic/subjects/physics/theoretical-physics-and-mathematical-physics/probability-theory-logic-science) 第二章，我仅仅只是将其压缩为一篇博客来叙述
+文章里并没有提出新的理论，几乎所有内容来自于 [Probability Theory: The Logic of Science](http://www.cambridge.org/gb/academic/subjects/physics/theoretical-physics-and-mathematical-physics/probability-theory-logic-science) 第二章，我仅仅只是将其压缩为一篇博客来叙述，填补了一些省去的中间步骤，难免会有些不严谨，甚至有错误，欢迎指出评论
