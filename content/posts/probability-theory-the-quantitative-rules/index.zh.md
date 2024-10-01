@@ -22,9 +22,7 @@ taxonomies:
 
 $$
 P(AB) = P(A)P(B|A) = P(B)P(A|B)
-$$
-
-$$
+\newline
 P(A + B) = P(A) + P(B) - P(AB)
 $$
 
@@ -129,37 +127,29 @@ $$
 我们排除了类似 $(C|A)$ 这些组合结构，前提的合情性不应该参与讨论，这是不符合 (II) 的。那么这些参数可以组成
 
 $$
+\begin{cases}
 F[(A|C), (B|C)]
-$$
-$$
+\newline
 F[(A|C), (A|BC)]
-$$
-$$
+\newline
 F[(A|C), (B|AC)]
-$$
-$$
+\newline
 F[(B|C), (A|BC)]
-$$
-$$
+\newline
 F[(B|C), (B|AC)]
-$$
-$$
+\newline
 F[(A|BC), (B|AC)]
-$$
-$$
+\newline
 F[(A|C), (B|C), (A|BC)]
-$$
-$$
+\newline
 F[(A|C), (B|C), (B|AC)]
-$$
-$$
+\newline
 F[(A|C), (A|BC), (B|AC)]
-$$
-$$
+\newline
 F[(B|C), (A|BC), (B|AC)]
-$$
-$$
+\newline
 F[(A|C), (B|C), (A|BC), (B|AC)]
+\end{cases}
 $$
 
 总共 11 个 $F$ 的可能形式
@@ -198,8 +188,7 @@ $$
 
 $$
 B|C' > B|C
-$$
-$$
+\newline
 A|BC' = A|BC
 $$
 
@@ -215,8 +204,7 @@ $$
 
 $$
 B|C'' = B|C
-$$
-$$
+\newline
 A|BC'' > A|BC
 $$
 
@@ -254,8 +242,7 @@ $$
 
 $$
 (A(BC)|D) = F[(BC|D), (A|BCD)] = F \lbrace F[(C|D), (B|CD)], (A|BCD) \rbrace
-$$
-$$
+\newline
 ((AB)C|D) = F[(C|D), (AB|CD)] = F \lbrace (C|D), F[(B|CD), (A|BCD)] \rbrace
 $$
 
@@ -291,8 +278,7 @@ $$
 
 $$
 F_1(x, v) = F_1(u, z)F_1(x, y)
-$$
-$$
+\newline
 F_2(x, v)F_1(y, z) = F_1(u, z)F_2(x, y)
 $$
 
@@ -340,8 +326,7 @@ $$
 
 $$
 F_1(y, z) = \frac{H(v)}{H(y)}
-$$
-$$
+\newline
 F_2(y, z) = r\frac{H(v)}{H(z)}
 $$
 
@@ -465,8 +450,7 @@ $$
 
 $$
 w(AB|C) = w(A|C)w(B|AC)
-$$
-$$
+\newline
 w(A\bar{B}|C) = w(A|C)w(\bar{B}|AC)
 $$
 
@@ -498,8 +482,7 @@ $$
 
 $$
 w(A\bar{B}|C) = w(\bar{B}|C) = S[w(B|C)]
-$$
-$$
+\newline
 w(B\bar{A}|C) = w(\bar{A}|C) = S[w(A|C)]
 $$
 
@@ -651,8 +634,7 @@ $$
 
 $$
 p(AB|C) = p(A|C)p(B|AC) = p(B|C)p(A|BC)
-$$
-$$
+\newline
 p(A|B) + p(\bar{A}|B) = 1
 $$
 
@@ -682,21 +664,15 @@ $$
 
 为了验证这一点，我们计算 $A + B$ 的逻辑公式
 
-$$
+$
 p(A + B|C) = 1 - p(\overline{AB}|C) = 1 - p(\bar{A}|C)p(\bar{B}|\bar{A}C)
-$$
-
-$$
+\newline
 = 1 - p(\bar{A}|C)[1 - p(B|\bar{A}C)] = p(A|C) + p(\bar{A}B|C)
-$$
-
-$$
+\newline
 = p(A|C) + p(B|C)p(\bar{A}|BC) = p(A|C) + p(B|C)[1 - p(A|BC)]
-$$
-
-$$
+\newline
 = p(A|C) + p(B|C) - p(AB|C)
-$$
+$
 
 这就是**广义加法规则**
 
@@ -712,13 +688,11 @@ $$
 
 我们考虑 $(A_1 + A_2 + A_3|B)$ 的合情性，其中 $\lbrace A_1, A_2, A_3 \rbrace$ 至少有一个为真，由我们的规则
 
-$$
+$
 p(A_1 + A_2 + A_3|B) = p(A_1 + A_2|B) + p(A_3|B) - p(A_1A_3 + A_2A_3|B)
-$$
-
-$$
+\newline
 = p(A_1|B) + p(A_2|B) + p(A_3|B) - p(A_1A_2|B) - p(A_2A_3|B) - p(A_3A_1|B) + p(A_1A_2A_3|B)
-$$
+$
 
 进一步假设 $\lbrace A_1, A_2, A_3 \rbrace$ 互斥，那么有
 $$

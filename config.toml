@@ -34,7 +34,7 @@ header_nav = [
     { lang = "en", name = "RSS", url = "/posts/atom.xml" },
     { lang = "zh", name = "订阅", url = "/zh/posts/atom.xml" },
 
-    { lang = "en", name = "*简体中文", path = "/zh" },
+    { lang = "en", name = "*简中", path = "/zh" },
     { lang = "zh", name = "*English", path = "/" },
 ]
 recent_pages = [
