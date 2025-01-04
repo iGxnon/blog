@@ -4,7 +4,6 @@ date: 2023-01-01
 description: 年度节目
 taxonomies:
   categories: ["生活"]
-  tags: ["人生", "闲聊"]
 ---
 
 # 发生的事

@@ -23,7 +23,7 @@ header_nav = [
     { lang = "en", name = "about", path = "/about" },
     { lang = "zh", name = "关于", path = "/zh/about" },
 
-    { lang = "zh", name = "周报", path = "/zh/weekly" },
+    { lang = "zh", name = "周寄", path = "/zh/weekly" },
 
     { lang = "en", name = "archived", path = "/posts" },
     { lang = "zh", name = "归档", path = "/zh/posts" },

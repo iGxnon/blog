@@ -6,7 +6,6 @@ extra:
   add_toc: true
 taxonomies:
   categories: ["生活"]
-  tags: ["人生", "闲聊"]
 ---
 
 > 虽然很想在年前完成这篇博客，最后还是拖到了现在。但是今年啊，那些经历，那些情感可真是令人难忘呢。
