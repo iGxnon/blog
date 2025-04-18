@@ -1,10 +1,28 @@
-#include <unordered_map>
+# CodeTop
 
-// 哈希表 + 双链表（带头尾伪节点方便处理边界）
-// - 注意移动到头的时候要从原来的位置删除（removeNode）
+[无重复字符的最长子串](https://leetcode.cn/problems/longest-substring-without-repeating-characters/description/)
 
-using namespace std;
+```c++
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        vector<int> idx(128, -1);
+        int l = 0, ans = 0;
+        for (int r = 0; r < s.size(); r ++) {
+            if (idx[s[r]] >= l) {
+                l = idx[s[r]] + 1;
+            }
+            idx[s[r]] = r;
+            ans = max(ans, r - l + 1);
+        }
+        return ans;
+    }
+};
+```
 
+[LRU 缓存](https://leetcode.cn/problems/lru-cache/description/)
+
+```c++
 class Node {
    public:
     int k, v;
@@ -68,10 +86,33 @@ class LRUCache {
         head->nex = n;
     }
 };
+```
 
+[反转链表](https://leetcode.cn/problems/reverse-linked-list/)
+
+```c++
 /**
- * Your LRUCache object will be instantiated and called as such:
- * LRUCache* obj = new LRUCache(capacity);
- * int param_1 = obj->get(key);
- * obj->put(key,value);
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
  */
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        ListNode *pre = nullptr;
+        ListNode *cur = head;
+        while (cur) {
+            ListNode *next = cur->next;
+            cur->next = pre;
+            pre = cur;
+            cur = next;
+        }
+        return pre;
+    }
+};
+```
