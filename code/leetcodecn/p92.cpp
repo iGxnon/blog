@@ -8,7 +8,6 @@ struct ListNode {
 
 class Solution {
    public:
-    // 仔细细心，分清楚哪个是哪个
     ListNode *reverseBetween(ListNode *head, int left, int right) {
         ListNode *dummy = new ListNode();
         dummy->next = head;
