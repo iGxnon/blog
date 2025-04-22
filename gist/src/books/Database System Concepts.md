@@ -1,4 +1,4 @@
-# Database System Concepts, Seventh Edition
+# Database System Concepts (Seventh Edition)
 
 ## #12 Physical Storage Systems
 
@@ -120,16 +120,86 @@ To find a block to store a new record of a given size, the database can scan the
 
 For large files, it can still be slow to scan free-space map. To further speed up the task of locating a block with sufficient free space, we can create a second-level free-space map, which has, say 1 entry for every 100 entries for the main free-space map. That 1 entry stores the maximum value amongst the 100 entries in the main free-space map that it corresponds to. (Seems like a skip list :D) We can create more levels beyond the second level, using the same idea.
 
+![image-20250422000910113](./img/image-20250422000910113.png)
+
 #### Sequential file organization
 
+A **sequential file** is designed for efficient processing of records in sorted order based on some search key. A **search key** is any attribute or set of attributes.  To permit fast retrieval of records in search-key order, we chain together records by pointers. The pointer in each record points to the next record in search-key order. Furthermore, to minimize the number of block accesses in sequential file processing, we store records physically in search-key order, or as close to search-key order as possible.
 
+Maintaining physical sequential order is difficult when inserting or deleting records, as moving many records due to a single change is costly.
+
+For insertion, we apply two rules:
+
+1. Locate the record in the file that precedes the record to be inserted in search key order.
+2. If there is available space in the same block, insert the new record there. Otherwise, insert the new record in an *overflow block*. In either case, adjust the pointers so as to chain together the records in search-key order.
+
+<img src="./img/image-20250421232832495.png" alt="image-20250421232832495" style="zoom:80%;" />
+
+**Reorganizing** is still necessary if the overflow blocks become too large. To keep the correspondence between search-key order and physical order. (B+-tree file organization provides efficient ordered access even if there are many inserts, deletes, without requiring expensive reorganizations).
 
 #### Multitable clustering file organization
 
+**Multitable clustering file organization** stores related records of two or more relations in each block. The **cluster key** is the attribute that defines which records are stored together.
 
+![image-20250421234219423](./img/image-20250421234219423.png)
+
+A multitable clustering file organization can speed up certain join queries but may slow down other types of queries.
+
+The Oracle database system supports multitable clustering. Clusters are created using a **create cluster** command with a specified cluster key. The **create table** command extension can specify that a relation is stored in a specific cluster, using a particular attribute as the cluster key, allowing multiple relations to be allocated to one cluster.
 
 #### B+-tree file organization
 
+**B+-tree file organization** allows efficient ordered access even with numerous insertions, deletions, or updates while also enabling very efficient access to specific records based on the search key.
 
+Detailed information will be discussed in #14.
 
 #### Hasing file organization
+
+A hash function is calculated based on a specific attribute of each record, determining the block in which the record should be stored in the file.
+
+Detailed information will be discussed in #14.
+
+#### Partitioning
+
+Many databases allow records in a relation to be partitioned into smaller relations stored separately. **Table partitioning** is usually based on an attribute value, such as partitioning transaction records by year into separate relations for each year (e.g., transaction 2018, transaction 2019).
+
+Table partitioning can avoid querying records with mismatched attributes. For example, a query **select * from transaction where year=2019** would only access the relation *transaction_2019*.
+
+Partitioning can help reduce costs for operations like finding free space for a record, as the size of relations increases. It can also be used to store different parts of a relation on separate storage devices. For example, in 2019, older transactions could be stored on magnetic disk while newer ones are stored on SSD for faster access.
+
+### Data-Dictionary Storage
+
+//
+
+## #14 Indexing
+
+### Basic Concepts
+
+//
+
+###  Ordered Indices
+
+//
+
+### B+-Tree Index Files
+
+//
+
+### B+-Tree Extensions
+
+//
+
+### Hash Indices
+
+//
+
+### Multiple-Key Access
+
+//
+
+###  Creation of Indices
+
+//
+
+### Write-Optimized Index Structures
+
