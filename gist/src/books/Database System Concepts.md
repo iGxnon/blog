@@ -56,10 +56,6 @@ Performance Measurement
 - **Data transfer rate**: Typical rates for both sequential reads and sequential writes are 400 to 500 megabytes per second for SSDs with a SATA 3 interface, and 2 to 3 GB/s for SSDs using NVMe over the PCIe3.0x4 interface.
 - **Random block writes per second**: Typical values in 2018 are about 40,000 random 4KB writes per second for QD-1 (without parallelism), and around 100,000 IOPS for QD-32.
 
-### RAID
-
-// 
-
 ## #13 Data Storage Structures
 
 ### File Organization
@@ -167,39 +163,35 @@ Table partitioning can avoid querying records with mismatched attributes. For ex
 
 Partitioning can help reduce costs for operations like finding free space for a record, as the size of relations increases. It can also be used to store different parts of a relation on separate storage devices. For example, in 2019, older transactions could be stored on magnetic disk while newer ones are stored on SSD for faster access.
 
-### Data-Dictionary Storage
-
-//
-
 ## #14 Indexing
 
-### Basic Concepts
-
-//
-
-###  Ordered Indices
-
-//
-
-### B+-Tree Index Files
-
-//
-
-### B+-Tree Extensions
-
-//
-
-### Hash Indices
-
-//
-
-### Multiple-Key Access
-
-//
-
-###  Creation of Indices
-
-//
-
 ### Write-Optimized Index Structures
+
+#### LSM Trees
+
+<img src="./img/image-20250422223603552.png" alt="image-20250422223603552" style="zoom:67%;" />
+
+An LSM tree consists of several B+-trees (While it may not be a B+-tree like LevelDB, it is simply an ordered data structure), starting with an in memory tree, called L0 and on-disk L1, L2, ..., L*k*, where *k* is called the **level**.
+
+Lookup operation is performed by merging all lookup operations on each of the tree.
+
+When a certain level is filled, it will be copied and form a new tree to be placed in the next level.
+
+Each level except L0 could have multiple B+-trees, which is called **stepped-merge index**. The stepped-merge index decreases the insert cost significantly compared to having only one tree per level, but it can result in an increase in query cost.
+
+Deletion results in insertion of a new **delete entry** that indicated which index entry is to be deleted. If a deletion entry is found, the to-be-deleted entry is filtered out and not returned as part of the lookup result.
+
+When trees are merged, if one of the trees contains an entry, and the other had a matching deletion entry, the entries get matched up during the merge (both would have the same key), and are both discarded. Updates follow a similar procedure, only the newest entry will be returned as lookup result and kept during the merge.
+
+LSM trees were originally created to decrease the write and seek overheads of magnetic disks. Flash-based SSDs have a lower overhead for random I/O operations because they do not need seeking, so the advantage of avoiding random I/O that LSM tree variations offer is not as crucial with SSDs.
+
+However, the flash memory does not allow in-place update, writing even a single byte to a disk page requires the whole page to be rewritten to a new physical location (The original location of the page needs to be erased firstly). Using LSM tree variants could reduce the number of writes and decrease the wearing rate.
+
+Many BigData storage systems, including Apache Cassandra, Apache AsterixDB, and MongoDB, now support LSM trees. MySQL (with the MyRocks storage engine), SQLite4, and LevelDB also offer support for LSM trees.
+
+## #24 Advanced Indexing Techniques
+
+### Log-Structured Merge Tree and Variants
+
+#### Insertion into LSM Trees
 

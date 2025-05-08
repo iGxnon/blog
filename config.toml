@@ -20,17 +20,8 @@ render_emoji = true
 [extra]
 logo = "images/logo.png"
 header_nav = [
-    { lang = "en", name = "about", path = "/about" },
-    { lang = "zh", name = "关于", path = "/zh/about" },
-
     { lang = "en", name = "archived", path = "/posts" },
     { lang = "zh", name = "归档", path = "/zh/posts" },
-
-    { lang = "en", name = "friends", path = "/friends" },
-    { lang = "zh", name = "朋友", path = "/zh/friends" },
-
-    { lang = "en", name = "RSS", url = "/posts/atom.xml" },
-    { lang = "zh", name = "订阅", url = "/zh/posts/atom.xml" },
 
     { lang = "en", name = "*简中", path = "/zh" },
     { lang = "zh", name = "*English", path = "/" },
