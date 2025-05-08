@@ -6,7 +6,6 @@
 = Paopao
 
 #link("mailto:igxnon@gmail.com")[igxnon\@gmail.com] $dot.c$
-#iconlink("https://blog.skygard.work/zh") $dot.c$
 #iconlink("https://github.com/iGxnon", icon: github)
 
 == 工作经历

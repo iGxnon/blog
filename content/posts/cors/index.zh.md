@@ -330,7 +330,7 @@ func WsPage(c *gin.Context) {
 ```txt
 GET /cors HTTP/1.1
 Origin: http://api.example.com
-Host: api.skygard.cn
+Host: xxx
 Accept-Language: en-US
 Connection: keep-alive
 User-Agent: Mozilla/5.0 ...
